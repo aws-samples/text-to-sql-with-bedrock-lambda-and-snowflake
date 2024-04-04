@@ -1,0 +1,244 @@
+{
+  "tasks": {
+    "build": {
+      "name": "build",
+      "description": "Full release build",
+      "steps": [
+        {
+          "spawn": "pre-compile"
+        },
+        {
+          "spawn": "compile"
+        },
+        {
+          "spawn": "post-compile"
+        },
+        {
+          "spawn": "test"
+        },
+        {
+          "spawn": "package"
+        }
+      ]
+    },
+    "bundle": {
+      "name": "bundle",
+      "description": "Prepare assets"
+    },
+    "compile": {
+      "name": "compile",
+      "description": "Only compile",
+      "steps": [
+        {
+          "exec": "npm run zip-runtime"
+        }
+      ]
+    },
+    "default": {
+      "name": "default",
+      "description": "Synthesize project files",
+      "steps": [
+        {
+          "exec": "pnpm dlx projen default",
+          "cwd": "../.."
+        }
+      ]
+    },
+    "deploy": {
+      "name": "deploy",
+      "description": "Deploys your CDK app to the AWS cloud",
+      "steps": [
+        {
+          "exec": "cdk deploy",
+          "receiveArgs": true
+        }
+      ]
+    },
+    "destroy": {
+      "name": "destroy",
+      "description": "Destroys your cdk app in the AWS cloud",
+      "steps": [
+        {
+          "exec": "cdk destroy",
+          "receiveArgs": true
+        }
+      ]
+    },
+    "diff": {
+      "name": "diff",
+      "description": "Diffs the currently deployed app against your code",
+      "steps": [
+        {
+          "exec": "cdk diff"
+        }
+      ]
+    },
+    "eslint": {
+      "name": "eslint",
+      "description": "Runs eslint against the codebase",
+      "steps": [
+        {
+          "exec": "eslint --ext .ts,.tsx --fix --no-error-on-unmatched-pattern $@ src/runtime test",
+          "receiveArgs": true
+        },
+        {
+          "spawn": "prettier"
+        }
+      ]
+    },
+    "install": {
+      "name": "install",
+      "description": "Install project dependencies and update lockfile (non-frozen)",
+      "steps": [
+        {
+          "exec": "pnpm i --no-frozen-lockfile"
+        }
+      ]
+    },
+    "install:ci": {
+      "name": "install:ci",
+      "description": "Install project dependencies using frozen lockfile",
+      "steps": [
+        {
+          "exec": "pnpm i --frozen-lockfile"
+        }
+      ]
+    },
+    "package": {
+      "name": "package",
+      "description": "Creates the distribution package"
+    },
+    "post-compile": {
+      "name": "post-compile",
+      "description": "Runs after successful compilation",
+      "steps": [
+        {
+          "spawn": "synth:silent"
+        }
+      ]
+    },
+    "post-upgrade": {
+      "name": "post-upgrade",
+      "description": "Runs after upgrading dependencies"
+    },
+    "pre-compile": {
+      "name": "pre-compile",
+      "description": "Prepare the project for compilation"
+    },
+    "prettier": {
+      "name": "prettier",
+      "steps": [
+        {
+          "exec": "prettier  --config /Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/.prettierrc.json --no-error-on-unmatched-pattern --write 'src/**/*.{ts,js,json,jsx}' 'src/*.{ts,js,json,jsx}'",
+          "receiveArgs": true
+        }
+      ]
+    },
+    "synth": {
+      "name": "synth",
+      "description": "Synthesizes your cdk app into cdk.out",
+      "steps": [
+        {
+          "exec": "cdk synth"
+        }
+      ]
+    },
+    "synth:silent": {
+      "name": "synth:silent",
+      "description": "Synthesizes your cdk app into cdk.out and suppresses the template in stdout (part of \"yarn build\")",
+      "steps": [
+        {
+          "exec": "cdk synth -q"
+        }
+      ]
+    },
+    "test": {
+      "name": "test",
+      "description": "Run tests",
+      "steps": [
+        {
+          "spawn": "eslint"
+        }
+      ]
+    },
+    "upgrade": {
+      "name": "upgrade",
+      "description": "upgrade dependencies",
+      "env": {
+        "CI": "0"
+      },
+      "steps": [
+        {
+          "exec": "pnpm dlx npm-check-updates@16 --upgrade --target=minor --peer --dep=dev,peer,prod,optional --filter=@types/sinon,aws-cdk-lib,cdk-assets,cdk-nag,esbuild,eslint-import-resolver-typescript,eslint-plugin-import,projen,sinon,ts-node,typescript,vitest"
+        },
+        {
+          "exec": "pnpm i --no-frozen-lockfile"
+        },
+        {
+          "exec": "pnpm update @types/node @types/sinon @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk-lib aws-cdk cdk-assets cdk-nag esbuild eslint-import-resolver-typescript eslint-plugin-import eslint projen sinon ts-node typescript vitest constructs"
+        },
+        {
+          "exec": "pnpm dlx projen"
+        },
+        {
+          "spawn": "post-upgrade"
+        }
+      ]
+    },
+    "watch": {
+      "name": "watch",
+      "description": "Watches changes in your source code and rebuilds and deploys to the current account",
+      "steps": [
+        {
+          "exec": "cdk deploy --hotswap"
+        },
+        {
+          "exec": "cdk watch"
+        }
+      ]
+    },
+    "zip-runtime": {
+      "name": "zip-runtime",
+      "steps": [
+        {
+          "exec": "rm -Rf ./dist"
+        },
+        {
+          "exec": "rm -Rf /tmp/infrastructure"
+        },
+        {
+          "exec": "mkdir -p /tmp/infrastructure/nodejs/node_modules/@text-to-sql-with-athena-and-snowflake/infrastructure"
+        },
+        {
+          "exec": "rm -Rf ./lib/runtime",
+          "cwd": "/Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/packages/infrastructure"
+        },
+        {
+          "exec": "mkdir ./dist",
+          "cwd": "/Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/packages/infrastructure"
+        },
+        {
+          "condition": "! test -e /tmp/snowflake-jdbc-3.15.0.jar",
+          "exec": "curl -s  https://repo1.maven.org/maven2/net/snowflake/snowflake-jdbc/3.15.0/snowflake-jdbc-3.15.0.jar -o /tmp/snowflake-jdbc-3.15.0.jar"
+        },
+        {
+          "exec": "mkdir -p ./dist/snowflake-jdbc-layer/java/lib",
+          "cwd": "/Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/packages/infrastructure"
+        },
+        {
+          "exec": "cp /tmp/snowflake-jdbc-3.15.0.jar ./dist/snowflake-jdbc-layer/java/lib",
+          "cwd": "/Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/packages/infrastructure"
+        },
+        {
+          "exec": "zip snowflake-jdbc-layer.zip ./dist/snowflake-jdbc-layer",
+          "cwd": "/Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/packages/infrastructure"
+        }
+      ],
+      "cwd": "/Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/packages/infrastructure"
+    }
+  },
+  "env": {
+    "PATH": "$(pnpm -c exec \"node --print process.env.PATH\")"
+  },
+  "//": "~~ Generated by projen. To modify, edit .projenrc.js and run \"pnpm dlx projen\"."
+}

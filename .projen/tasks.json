@@ -24,10 +24,6 @@
         }
       ]
     },
-    "bundle": {
-      "name": "bundle",
-      "description": "Prepare assets"
-    },
     "clobber": {
       "name": "clobber",
       "description": "hard resets to HEAD of origin and cleans the local repo",
@@ -62,7 +58,12 @@
     },
     "compile": {
       "name": "compile",
-      "description": "Only compile"
+      "description": "Only compile",
+      "steps": [
+        {
+          "exec": "tsc --build"
+        }
+      ]
     },
     "default": {
       "name": "default",
@@ -75,30 +76,19 @@
     },
     "deploy": {
       "name": "deploy",
-      "description": "Deploys your CDK app to the AWS cloud",
       "steps": [
         {
-          "exec": "cdk deploy",
+          "exec": "nx deploy @text-to-sql-with-athena-and-snowflake/infrastructure",
           "receiveArgs": true
         }
       ]
     },
     "destroy": {
       "name": "destroy",
-      "description": "Destroys your cdk app in the AWS cloud",
       "steps": [
         {
-          "exec": "cdk destroy",
+          "exec": "nx destroy @text-to-sql-with-athena-and-snowflake/infrastructure",
           "receiveArgs": true
-        }
-      ]
-    },
-    "diff": {
-      "name": "diff",
-      "description": "Diffs the currently deployed app against your code",
-      "steps": [
-        {
-          "exec": "cdk diff"
         }
       ]
     },
@@ -111,16 +101,6 @@
       "steps": [
         {
           "spawn": "default"
-        }
-      ]
-    },
-    "eslint": {
-      "name": "eslint",
-      "description": "Runs eslint against the codebase",
-      "steps": [
-        {
-          "exec": "eslint --ext .ts,.tsx --fix --no-error-on-unmatched-pattern $@ src test build-tools projenrc .projenrc.ts",
-          "receiveArgs": true
         }
       ]
     },
@@ -142,18 +122,30 @@
         }
       ]
     },
+    "nx": {
+      "name": "nx",
+      "steps": [
+        {
+          "exec": "nx build @text-to-sql-with-athena-and-snowflake/infrastructure",
+          "receiveArgs": true
+        }
+      ]
+    },
     "package": {
       "name": "package",
-      "description": "Creates the distribution package"
+      "description": "Creates the distribution package",
+      "steps": [
+        {
+          "exec": "mkdir -p dist/js"
+        },
+        {
+          "exec": "mv $(pnpm pack) dist/js/"
+        }
+      ]
     },
     "post-compile": {
       "name": "post-compile",
-      "description": "Runs after successful compilation",
-      "steps": [
-        {
-          "spawn": "synth:silent"
-        }
-      ]
+      "description": "Runs after successful compilation"
     },
     "post-upgrade": {
       "name": "post-upgrade",
@@ -163,45 +155,18 @@
       "name": "pre-compile",
       "description": "Prepare the project for compilation"
     },
-    "synth": {
-      "name": "synth",
-      "description": "Synthesizes your cdk app into cdk.out",
+    "prettier": {
+      "name": "prettier",
       "steps": [
         {
-          "exec": "cdk synth"
-        }
-      ]
-    },
-    "synth:silent": {
-      "name": "synth:silent",
-      "description": "Synthesizes your cdk app into cdk.out and suppresses the template in stdout (part of \"yarn build\")",
-      "steps": [
-        {
-          "exec": "cdk synth -q"
+          "exec": "nx prettier @text-to-sql-with-athena-and-snowflake/infrastructure",
+          "receiveArgs": true
         }
       ]
     },
     "test": {
       "name": "test",
-      "description": "Run tests",
-      "steps": [
-        {
-          "exec": "jest --passWithNoTests --updateSnapshot",
-          "receiveArgs": true
-        },
-        {
-          "spawn": "eslint"
-        }
-      ]
-    },
-    "test:watch": {
-      "name": "test:watch",
-      "description": "Run jest in watch mode",
-      "steps": [
-        {
-          "exec": "jest --watch"
-        }
-      ]
+      "description": "Run tests"
     },
     "upgrade": {
       "name": "upgrade",
@@ -211,16 +176,16 @@
       },
       "steps": [
         {
-          "exec": "pnpm dlx npm-check-updates@16 --upgrade --target=minor --peer --dep=dev,peer,prod,optional --filter=@types/jest,esbuild,eslint-import-resolver-typescript,eslint-plugin-import,jest,projen,ts-jest,ts-node,typescript"
+          "exec": "pnpm dlx npm-check-updates@16 --upgrade --target=minor --peer --dep=dev,peer,prod,optional --filter=@npmcli/arborist,@types/npm-packlist,@types/npmcli__arborist,prettier,projen,ts-node,typescript"
         },
         {
           "exec": "pnpm i --no-frozen-lockfile"
         },
         {
-          "exec": "pnpm update @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk esbuild eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit projen ts-jest ts-node typescript aws-cdk-lib constructs"
+          "exec": "pnpm update @npmcli/arborist @nrwl/devkit @nrwl/workspace @types/node @types/npm-packlist @types/npmcli__arborist constructs nx prettier projen ts-node typescript"
         },
         {
-          "exec": "npx projen"
+          "exec": "pnpm dlx projen"
         },
         {
           "spawn": "post-upgrade"
@@ -229,13 +194,10 @@
     },
     "watch": {
       "name": "watch",
-      "description": "Watches changes in your source code and rebuilds and deploys to the current account",
+      "description": "Watch & compile in the background",
       "steps": [
         {
-          "exec": "cdk deploy --hotswap"
-        },
-        {
-          "exec": "cdk watch"
+          "exec": "tsc --build -w"
         }
       ]
     }
@@ -243,5 +205,5 @@
   "env": {
     "PATH": "$(pnpm -c exec \"node --print process.env.PATH\")"
   },
-  "//": "~~ Generated by projen. To modify, edit .projenrc.ts and run \"npx projen\"."
+  "//": "~~ Generated by projen. To modify, edit .projenrc.ts and run \"pnpm dlx projen\"."
 }

@@ -1,29 +1,23 @@
 import {Construct} from "constructs";
 
 import {BlockPublicAccess, Bucket} from "aws-cdk-lib/aws-s3";
-import {Aws, RemovalPolicy, SecretValue, Stack} from "aws-cdk-lib";
-import {Secret} from "aws-cdk-lib/aws-secretsmanager";
+import {Aws, RemovalPolicy,  Stack} from "aws-cdk-lib";
+
 import {CfnApplication} from "aws-cdk-lib/aws-sam";
 import {CfnDataCatalog} from "aws-cdk-lib/aws-athena";
+import {SnowflakeConnection} from "../stacks/TextToSqlWithAthenaAndSnowflakeStack";
 
 
-export interface AthenaSnowflakeDataSourceConfig {
-	connectionString: string,
+export interface AthenaSnowflakeDataSourceConfig extends SnowflakeConnection{
+
 }
 
 export class AthenaSnowflakeDataSource extends Construct {
 
+
 	constructor(scope: Construct, id: string, config: AthenaSnowflakeDataSourceConfig) {
 		super(scope, id);
-		new Secret(this, 'SnowflakeCredentials', {
-			secretName: `AthenaJdbcFederation/${Stack.of(this).stackName}/snowflake`,
-			removalPolicy: RemovalPolicy.DESTROY,
-			description: 'Credentials for snowflake',
-			secretObjectValue: {
-				username: SecretValue.unsafePlainText('REPLACE ME AFTER DEPLOYMENT'),
-				password: SecretValue.unsafePlainText('REPLACE ME AFTER DEPLOYMENT'),
-			},
-		});
+
 		const spillBucket = new Bucket(this, "LambdaSpillBucket", {
 			removalPolicy: RemovalPolicy.DESTROY,
 			blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
@@ -37,7 +31,7 @@ export class AthenaSnowflakeDataSource extends Construct {
 			},
 			parameters: {
 				"SecretNamePrefix": "AthenaJdbcFederation/",
-				"DefaultConnectionString": `${config.connectionString}&\${AthenaJdbcFederation/${Stack.of(this).stackName}/snowflake}`,
+				"DefaultConnectionString": `snowflake://jdbc:snowflake://${config.snowflakeAccountId}.snowflakecomputing.com:443?db=${config.snowflakeDb}&role=${config.snowflakeRole}&warehouse=${config.snowflakeWarehouse}&\${AthenaJdbcFederation/${Stack.of(this).stackName}/snowflake}`,
 				"SpillBucket": spillBucket.bucketName,
 				"LambdaFunctionName": lambdaFunctionName
 			}
@@ -50,6 +44,7 @@ export class AthenaSnowflakeDataSource extends Construct {
 				"record-function": `arn:aws:lambda:${Aws.REGION}:${Aws.ACCOUNT_ID}:function:${lambdaFunctionName}`
 			}
 		})
+
 
 
 	}

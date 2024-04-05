@@ -58,7 +58,7 @@ const main = async () => {
 			},
 			include: ["projen/**/*.ts"]
 		},
-		gitignore: [".DS_Store", ".idea", "*.iml", ".$*", "appsec"],
+		gitignore: [".DS_Store", ".idea", "*.iml", ".$*", "appsec",'cdk.context.json'],
 		// Jest and eslint are disabled at the root as they will be
 		// configured by each subproject. Using a single jest/eslint
 		// config at the root is out of scope for this walkthrough
@@ -183,6 +183,10 @@ const main = async () => {
 				exec: "mkdir ./dist",
 				cwd: p.outdir
 			},
+			{
+				condition: "! test -e /tmp/snowflake-jdbc-3.15.0.jar",
+				exec: "curl -s  https://repo1.maven.org/maven2/net/snowflake/snowflake-jdbc/3.15.0/snowflake-jdbc-3.15.0.jar -o /tmp/snowflake-jdbc-3.15.0.jar"
+			}
 		];
 		return steps;
 	});

@@ -35,6 +35,7 @@ jspm_packages/
 *.iml
 .$*
 appsec
+cdk.context.json
 !/.github/pull_request_template.md
 !/.npmrc
 !/test/

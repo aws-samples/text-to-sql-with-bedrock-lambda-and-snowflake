@@ -15,21 +15,22 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { SQSEvent, SQSHandler } from 'aws-lambda';
-import { Callback, Context, Handler } from 'aws-lambda/handler';
+import { SQSEvent, SQSHandler } from "aws-lambda";
+import { Callback, Context, Handler } from "aws-lambda/handler";
 
-import { SQSBatchResponse } from 'aws-lambda/trigger/sqs';
-import { AwsApiCalls } from './Aws';
-import { D365ApiCalls } from './D365';
-import { Powertools } from './Powertools';
+import { SQSBatchResponse } from "aws-lambda/trigger/sqs";
+import { AwsApiCalls } from "./Aws";
 
-export * from './Aws';
-export * from './Powertools';
+import { OpenSearchApiCalls } from "./Opensearch";
+import { Powertools } from "./Powertools";
+
+export * from "./Aws";
+export * from "./Powertools";
 
 export interface BasicLambdaTools {
   aws: AwsApiCalls;
   powertools: Powertools;
-  D365: D365ApiCalls;
+  aoss: OpenSearchApiCalls;
 }
 
 export type LambdaHandler<TEvent = any, TResult = any> =

@@ -31,6 +31,7 @@ import {NodeProject, TypeScriptModuleResolution} from "projen/lib/javascript";
 import {ApprovalLevel, AwsCdkTypeScriptApp} from "projen/lib/awscdk";
 import {execSync} from "child_process";
 import {TaskStep} from "projen/lib/task-model";
+import {PrettierRc} from "./projenrc/prettierrc";
 
 
 const defaultReleaseBranch = "main";
@@ -58,7 +59,7 @@ const main = async () => {
 			},
 			include: ["projen/**/*.ts"]
 		},
-		gitignore: [".DS_Store", ".idea", "*.iml", ".$*", "appsec",'cdk.context.json'],
+		gitignore: [".DS_Store", ".idea", "*.iml", ".$*", "appsec",'cdk.context.json','metadata.json'],
 		// Jest and eslint are disabled at the root as they will be
 		// configured by each subproject. Using a single jest/eslint
 		// config at the root is out of scope for this walkthrough
@@ -118,9 +119,20 @@ const main = async () => {
 		},
 		releaseTrigger: ReleaseTrigger.manual({}),
 		majorVersion: 0,
-		deps: [] /* Runtime dependencies of this module. */,
+		deps: [	"@aws-lambda-powertools/logger",
+			"@aws-lambda-powertools/metrics",
+			"@aws-lambda-powertools/tracer",
+			"@middy/core",
+			"@types/aws-lambda",
+		"@aws-sdk/client-glue",
+		"@smithy/types",
+			"@opensearch-project/opensearch",
+		"@aws-sdk/credential-provider-node"] /* Runtime dependencies of this module. */,
 		// description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
 		devDeps: [
+
+
+			"change-case@4.1.2",
 			"aws-cdk-lib",
 			"cdk-assets",
 			"cdk-nag",
@@ -129,6 +141,7 @@ const main = async () => {
 			"vitest"
 		]
 	});
+	new PrettierRc(root);
 	new PnpmWorkspace(root);
 	new Nx(root); // add nx to root
 	root.package.addField("packageManager", `pnpm@${pnpmVersion}`);

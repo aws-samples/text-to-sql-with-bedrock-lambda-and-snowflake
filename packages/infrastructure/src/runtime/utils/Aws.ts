@@ -14,9 +14,9 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
-import { FirehoseClient, PutRecordCommand, PutRecordCommandInput, PutRecordCommandOutput } from '@aws-sdk/client-firehose';
-import { Powertools } from './Powertools';
+import { GetTablesCommand, GetTablesCommandInput, GetTablesCommandOutput, GlueClient, paginateGetTables } from "@aws-sdk/client-glue";
+import { Paginator } from "@smithy/types";
+import { Powertools } from "./Powertools";
 
 export type PaginationConfig = {
   pageSize?: number;
@@ -25,7 +25,7 @@ export type PaginationConfig = {
 };
 
 export interface AwsApiCalls {
-  putRecord(input: PutRecordCommandInput): Promise<PutRecordCommandOutput>;
+  getTablesPaginated(input: GetTablesCommandInput): Paginator<GetTablesCommandOutput>;
 }
 
 export class Aws implements AwsApiCalls {
@@ -38,10 +38,12 @@ export class Aws implements AwsApiCalls {
 
   private static _instance: Aws | undefined;
 
-  private _firehoseClient?: FirehoseClient;
-
+  //@ts-ignore
   private config: { [key: string]: any | undefined };
+  //@ts-ignore
   private _powertools: Powertools | undefined;
+
+  private _glueClient?: GlueClient;
 
   private constructor(config: { [key: string]: any | undefined } = {}, powertools: Powertools | undefined) {
     this.config = config;
@@ -52,21 +54,31 @@ export class Aws implements AwsApiCalls {
     return new Aws(config, powertools);
   }
 
-  private get firehoseClient(): FirehoseClient {
-    if (this._firehoseClient == undefined) {
-      this._firehoseClient = this._powertools
+  private get glueClient(): GlueClient {
+    if (this._glueClient == undefined) {
+      this._glueClient = this._powertools
         ? this._powertools.tracer.captureAWSv3Client(
-          new FirehoseClient({
-            ...this.config,
-            retryMode: 'adaptive',
-          }),
-        )
-        : new FirehoseClient(this.config);
+            new GlueClient({
+              ...this.config,
+              retryMode: "adaptive",
+            }),
+          )
+        : new GlueClient(this.config);
     }
-    return this._firehoseClient;
+    return this._glueClient;
   }
 
-  async putRecord(input: PutRecordCommandInput): Promise<PutRecordCommandOutput> {
-    return this.firehoseClient.send(new PutRecordCommand(input));
+  async getTables(input: GetTablesCommandInput): Promise<GetTablesCommandOutput> {
+    return this.glueClient.send(new GetTablesCommand(input));
+  }
+
+  getTablesPaginated(input: GetTablesCommandInput): Paginator<GetTablesCommandOutput> {
+    return paginateGetTables(
+      {
+        client: this.glueClient,
+        pageSize: 100,
+      },
+      input,
+    );
   }
 }

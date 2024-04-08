@@ -36,6 +36,7 @@ jspm_packages/
 .$*
 appsec
 cdk.context.json
+metadata.json
 !/.github/pull_request_template.md
 !/.npmrc
 !/test/
@@ -44,6 +45,7 @@ cdk.context.json
 !/src/
 /lib
 /dist/
+!/.prettierrc.json
 !/pnpm-workspace.yaml
 !/nx.json
 !/.projenrc.ts

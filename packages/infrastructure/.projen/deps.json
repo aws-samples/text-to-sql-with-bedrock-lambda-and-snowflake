@@ -25,7 +25,7 @@
     },
     {
       "name": "aws-cdk",
-      "version": "^2.135.0",
+      "version": "^2.136.0",
       "type": "build"
     },
     {
@@ -34,6 +34,11 @@
     },
     {
       "name": "cdk-nag",
+      "type": "build"
+    },
+    {
+      "name": "change-case",
+      "version": "4.1.2",
       "type": "build"
     },
     {
@@ -74,8 +79,44 @@
       "type": "build"
     },
     {
+      "name": "@aws-lambda-powertools/logger",
+      "type": "runtime"
+    },
+    {
+      "name": "@aws-lambda-powertools/metrics",
+      "type": "runtime"
+    },
+    {
+      "name": "@aws-lambda-powertools/tracer",
+      "type": "runtime"
+    },
+    {
+      "name": "@aws-sdk/client-glue",
+      "type": "runtime"
+    },
+    {
+      "name": "@aws-sdk/credential-provider-node",
+      "type": "runtime"
+    },
+    {
+      "name": "@middy/core",
+      "type": "runtime"
+    },
+    {
+      "name": "@opensearch-project/opensearch",
+      "type": "runtime"
+    },
+    {
+      "name": "@smithy/types",
+      "type": "runtime"
+    },
+    {
+      "name": "@types/aws-lambda",
+      "type": "runtime"
+    },
+    {
       "name": "aws-cdk-lib",
-      "version": "^2.135.0",
+      "version": "^2.136.0",
       "type": "runtime"
     },
     {

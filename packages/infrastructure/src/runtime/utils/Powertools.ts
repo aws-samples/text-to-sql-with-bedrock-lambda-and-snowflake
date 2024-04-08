@@ -15,13 +15,13 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { Logger } from '@aws-lambda-powertools/logger';
-import { Metrics } from '@aws-lambda-powertools/metrics';
-import { logMetrics } from '@aws-lambda-powertools/metrics/middleware';
-import { Tracer } from '@aws-lambda-powertools/tracer';
-import { captureLambdaHandler } from '@aws-lambda-powertools/tracer/middleware';
-import middy from '@middy/core';
-import { Handler } from 'aws-lambda/handler';
+import { Logger } from "@aws-lambda-powertools/logger";
+import { Metrics } from "@aws-lambda-powertools/metrics";
+import { logMetrics } from "@aws-lambda-powertools/metrics/middleware";
+import { Tracer } from "@aws-lambda-powertools/tracer";
+import { captureLambdaHandler } from "@aws-lambda-powertools/tracer/middleware";
+import middy from "@middy/core";
+import { Handler } from "aws-lambda/handler";
 
 export interface PowertoolsConfig {
   namespace: string;
@@ -31,9 +31,9 @@ export interface PowertoolsConfig {
 
 export class Powertools {
   static readonly DEFAULT_CONFIG = {
-    logLevel: process.env.LOG_LEVEL ?? 'INFO',
-    serviceName: process.env.POWERTOOLS_SERVICE_NAME ?? 'service',
-    namespace: process.env.POWERTOOLS_METRICS_NAMESPACE ?? 'default',
+    logLevel: process.env.LOG_LEVEL ?? "INFO",
+    serviceName: process.env.POWERTOOLS_SERVICE_NAME ?? "service",
+    namespace: process.env.POWERTOOLS_METRICS_NAMESPACE ?? "default",
   };
 
   readonly metrics: Metrics;

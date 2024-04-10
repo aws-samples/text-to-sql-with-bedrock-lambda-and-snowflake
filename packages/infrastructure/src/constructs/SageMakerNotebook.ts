@@ -6,10 +6,12 @@ import { Bucket } from "aws-cdk-lib/aws-s3";
 import path from "node:path";
 import { Aws, Fn } from "aws-cdk-lib";
 import { CfnDatabase } from "aws-cdk-lib/aws-glue";
+import { OpenSearchServerlessVectorStore } from "./OpenSearchServerlessVectorStore";
 
 export interface SageMakerNotebookConfig {
   assetBucket: Bucket;
   database: CfnDatabase;
+  vectorStore: OpenSearchServerlessVectorStore;
 }
 
 export class SageMakerNotebook extends Construct implements IDependable {
@@ -49,10 +51,22 @@ export class SageMakerNotebook extends Construct implements IDependable {
               actions: ["bedrock:InvokeModel"],
               resources: [`arn:${Aws.PARTITION}:bedrock:${Aws.REGION}::foundation-model/amazon.titan-embed-text-v1n`],
             }),
+            new PolicyStatement({
+              effect: Effect.ALLOW,
+              actions: ["aoss:APIAccessAll"],
+              resources: [`${config.vectorStore.collection.attrArn}`],
+            }),
+            new PolicyStatement({
+              effect: Effect.ALLOW,
+              actions: ["aoss:ListCollections"],
+              resources: ["*"],
+            }),
           ],
         }),
       },
     });
+
+    config.vectorStore.grantFullDataAccess("notebook-access-policy", this.role);
     config.assetBucket.grantRead(this.role);
     const notebookInstance = new CfnNotebookInstance(this, "NotebookInstance", {
       roleArn: this.role.roleArn,

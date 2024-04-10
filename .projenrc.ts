@@ -75,7 +75,8 @@ const main = async () => {
 			"@npmcli/arborist",
 			"@types/npm-packlist",
 			"@types/npmcli__arborist",
-			"prettier"
+			"prettier",
+			"projen",
 		]
 	});
 	const infrastructure = new AwsCdkTypeScriptApp({

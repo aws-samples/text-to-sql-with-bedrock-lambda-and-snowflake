@@ -50,11 +50,12 @@ export class TextToSqlWithAthenaAndSnowflakeStack extends Stack {
       secret: secret,
       ...props,
     });
-    const notebook = new SageMakerNotebook(this, "SageMakerNotebook", {
+    const vectorStore = new OpenSearchServerlessVectorStore(this, "VectorStore", "knowledge-base", "Knowledge base in text-to-sql RAG framework");
+
+    new SageMakerNotebook(this, "SageMakerNotebook", {
       assetBucket,
       database: crawler.database,
+      vectorStore: vectorStore,
     });
-    const knowledgeBase = new OpenSearchServerlessVectorStore(this, "VectorStore", "knowledge-base", "Knowledge base in text-to-sql RAG framework");
-    knowledgeBase.grantFullDataAccess("notebook-access-policy", notebook.role);
   }
 }

@@ -32,7 +32,7 @@ export class SageMakerNotebook extends Construct implements IDependable {
     const notebooks = new BucketDeployment(this, "Notebooks", {
       destinationBucket: config.assetBucket,
       extract: true,
-      retainOnDelete:true,
+      retainOnDelete: true,
       destinationKeyPrefix: "notebooks",
       sources: [Source.asset(path.join(__dirname, "..", "notebooks"))],
     });
@@ -69,6 +69,15 @@ export class SageMakerNotebook extends Construct implements IDependable {
 
     config.vectorStore.grantFullDataAccess("notebook-access-policy", this.role);
     config.assetBucket.grantRead(this.role);
+    const downloadFiles = Fn.base64(`cd /home/ec2-user/SageMaker/ && aws s3 sync ${notebooks.deployedBucket.s3UrlForObject()}/notebooks .`);
+    const lifecycleConfig = new CfnNotebookInstanceLifecycleConfig(this, "NotebookInstanceLifecycleConfig", {
+      notebookInstanceLifecycleConfigName: "snowflake-text-to-sql-notebook-lifecycle",
+      onStart: [
+        {
+          content: downloadFiles,
+        },
+      ],
+    });
     const notebookInstance = new CfnNotebookInstance(this, "NotebookInstance", {
       roleArn: this.role.roleArn,
       instanceType: "ml.t3.medium",
@@ -77,16 +86,9 @@ export class SageMakerNotebook extends Construct implements IDependable {
       rootAccess: "Enabled",
       volumeSizeInGb: 5,
       platformIdentifier: "notebook-al2-v2",
+      lifecycleConfigName: lifecycleConfig.attrNotebookInstanceLifecycleConfigName,
     });
-    const downloadFiles = Fn.base64(`cd /home/ec2-user/SageMaker/ && aws s3 sync ${notebooks.deployedBucket.s3UrlForObject()}/notebooks .`);
-    new CfnNotebookInstanceLifecycleConfig(this, "NotebookInstanceLifecycleConfig", {
-      notebookInstanceLifecycleConfigName: "snowflake-text-to-sql-notebook-lifecycle",
-      onStart: [
-        {
-          content: downloadFiles,
-        },
-      ],
-    });
+
     notebookInstance.node.addDependency(this.role);
   }
 }

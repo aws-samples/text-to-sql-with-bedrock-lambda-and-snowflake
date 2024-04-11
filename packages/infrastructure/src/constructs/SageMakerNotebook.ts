@@ -32,6 +32,7 @@ export class SageMakerNotebook extends Construct implements IDependable {
     const notebooks = new BucketDeployment(this, "Notebooks", {
       destinationBucket: config.assetBucket,
       extract: true,
+      retainOnDelete:true,
       destinationKeyPrefix: "notebooks",
       sources: [Source.asset(path.join(__dirname, "..", "notebooks"))],
     });

@@ -69,6 +69,7 @@ export class GlueSnowflakeCrawler extends Construct implements IDependable {
       destinationKeyPrefix: "drivers",
       memoryLimit: 1024,
       extract: false,
+      retainOnDelete: true,
     });
     const connection = new CfnConnection(this, "GlueSnowflakeConnection", {
       catalogId: Aws.ACCOUNT_ID,

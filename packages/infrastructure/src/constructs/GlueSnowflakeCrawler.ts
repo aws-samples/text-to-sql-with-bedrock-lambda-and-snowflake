@@ -7,6 +7,7 @@ import { BucketDeployment, Source } from "aws-cdk-lib/aws-s3-deployment";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { SnowflakeConnection } from "../stacks/TextToSqlWithAthenaAndSnowflakeStack";
 import { GatewayVpcEndpointAwsService, InterfaceVpcEndpointAwsService, Port, SecurityGroup, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
+import { AwsCustomResource, AwsCustomResourcePolicy } from "aws-cdk-lib/custom-resources";
 
 export interface GlueSnowflakeCrawlerConfig extends SnowflakeConnection {
   secret: Secret;
@@ -15,6 +16,7 @@ export interface GlueSnowflakeCrawlerConfig extends SnowflakeConnection {
 
 export class GlueSnowflakeCrawler extends Construct implements IDependable {
   readonly database: CfnDatabase;
+
   constructor(scope: Construct, id: string, config: GlueSnowflakeCrawlerConfig) {
     super(scope, id);
     Dependable.implement(this, {
@@ -108,7 +110,12 @@ export class GlueSnowflakeCrawler extends Construct implements IDependable {
         name: "snowflake",
       },
     });
-    new CfnCrawler(this, "GlueCrawler", {
+    const jdbcTarget = {
+      connectionName: connection.ref,
+      path: config.crawlerPath ?? `${config.snowflakeDb}/%`,
+      exclusions: [],
+    };
+    const crawler = new CfnCrawler(this, "GlueCrawler", {
       databaseName: this.database.ref,
       name: "SnowflakeCrawler",
       recrawlPolicy: {
@@ -119,15 +126,31 @@ export class GlueSnowflakeCrawler extends Construct implements IDependable {
         updateBehavior: "UPDATE_IN_DATABASE",
       },
       targets: {
-        jdbcTargets: [
-          {
-            connectionName: connection.ref,
-            path: config.crawlerPath ?? `${config.snowflakeDb}/%`,
-            exclusions: [],
-          },
-        ],
+        jdbcTargets: [jdbcTarget],
       },
       role: glueCrawlerRole.roleArn,
     });
+    const command = {
+      service: "Glue",
+      action: "UpdateCrawler",
+      physicalResourceId: { id: "UpdateCrawler" },
+      parameters: {
+        Name: crawler.ref,
+        JdbcTargets: [
+          {
+            ...jdbcTarget,
+            EnableAdditionalMetadata: ["COMMENTS"],
+          },
+        ],
+      },
+    };
+    const updateCrawlerDataSource = new AwsCustomResource(this, "UpdateCrawlerDataSource", {
+      onCreate: command,
+      onUpdate: command,
+      policy: AwsCustomResourcePolicy.fromSdkCalls({
+        resources: AwsCustomResourcePolicy.ANY_RESOURCE,
+      }),
+    });
+    updateCrawlerDataSource.node.addDependency(crawler);
   }
 }

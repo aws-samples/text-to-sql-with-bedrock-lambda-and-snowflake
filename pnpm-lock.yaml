@@ -75,8 +75,8 @@ importers:
         specifier: ^8.10.137
         version: 8.10.137
       aws-cdk-lib:
-        specifier: ^2.136.1
-        version: 2.136.1(constructs@10.3.0)
+        specifier: ^2.137.0
+        version: 2.137.0(constructs@10.3.0)
       constructs:
         specifier: ^10.0.5
         version: 10.3.0
@@ -94,14 +94,14 @@ importers:
         specifier: ^6
         version: 6.21.0(eslint@8.57.0)(typescript@5.4.3)
       aws-cdk:
-        specifier: ^2.136.1
-        version: 2.136.1
+        specifier: ^2.137.0
+        version: 2.137.0
       cdk-assets:
         specifier: ^2.135.0
         version: 2.135.0
       cdk-nag:
         specifier: ^2.28.82
-        version: 2.28.82(aws-cdk-lib@2.136.1)(constructs@10.3.0)
+        version: 2.28.82(aws-cdk-lib@2.137.0)(constructs@10.3.0)
       change-case:
         specifier: 4.1.2
         version: 4.1.2
@@ -2545,8 +2545,8 @@ packages:
       possible-typed-array-names: 1.0.0
     dev: true
 
-  /aws-cdk-lib@2.136.1(constructs@10.3.0):
-    resolution: {integrity: sha512-2wlTABbgaVqARlCGyG88uY4oSNnXdGxD54bb71VxM6YBKk2qxUiKdUcu5wKeSiz+/VNT8Kv7nItTPPFxEY82RA==}
+  /aws-cdk-lib@2.137.0(constructs@10.3.0):
+    resolution: {integrity: sha512-pD3AGdKBa8q1+vVWRabiDHuecVMlP8ERGPHc9Pb0dVlpbC/ODC6XXC1S0TAMsr0JI5Lh6pk4vL5cC+spsMeotw==}
     engines: {node: '>= 14.15.0'}
     peerDependencies:
       constructs: ^10.0.0
@@ -2568,8 +2568,8 @@ packages:
       - yaml
       - mime-types
 
-  /aws-cdk@2.136.1:
-    resolution: {integrity: sha512-CkmyGrXFCeKD3P1uFRIwrx3C5uFtnZhlKwItpAcXPdPEcnfwsMUJuh/QdcKXXrP7hKsxqrTivrRLwcnFZ9KvyA==}
+  /aws-cdk@2.137.0:
+    resolution: {integrity: sha512-3pf3SVDwNZvo3EfhO3yl1B+KbRHz7T4UmPifUEKfOwk7ABAFLRSNddZuUlF560XSBTFLkrZoeBDa0/MLJT6F4g==}
     engines: {node: '>= 14.15.0'}
     hasBin: true
     optionalDependencies:
@@ -2773,13 +2773,13 @@ packages:
       yargs: 16.2.0
     dev: true
 
-  /cdk-nag@2.28.82(aws-cdk-lib@2.136.1)(constructs@10.3.0):
+  /cdk-nag@2.28.82(aws-cdk-lib@2.137.0)(constructs@10.3.0):
     resolution: {integrity: sha512-wSN4haG4c43EaAFoM92ZftIf6kWMsMJ0ZFEKzn9LXr2twN5d8CAleEE2HWqMKF3c1mmRp3GaxqgPl4TRso5oSw==}
     peerDependencies:
       aws-cdk-lib: ^2.116.0
       constructs: ^10.0.5
     dependencies:
-      aws-cdk-lib: 2.136.1(constructs@10.3.0)
+      aws-cdk-lib: 2.137.0(constructs@10.3.0)
       constructs: 10.3.0
     dev: true
 

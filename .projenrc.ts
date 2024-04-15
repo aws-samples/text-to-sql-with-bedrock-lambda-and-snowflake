@@ -198,6 +198,9 @@ const main = async () => {
 				cwd: p.outdir
 			},
 			{
+				exec: "mkdir -p /tmp/imdb",
+			},
+			{
 				condition: "! test -e /tmp/snowflake-jdbc-3.15.0.jar",
 				exec: "curl -s  https://repo1.maven.org/maven2/net/snowflake/snowflake-jdbc/3.15.0/snowflake-jdbc-3.15.0.jar -o /tmp/snowflake-jdbc-3.15.0.jar"
 			}

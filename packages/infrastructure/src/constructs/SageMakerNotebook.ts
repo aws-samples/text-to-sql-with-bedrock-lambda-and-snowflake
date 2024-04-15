@@ -7,11 +7,13 @@ import path from "node:path";
 import { Aws, Fn } from "aws-cdk-lib";
 import { CfnDatabase } from "aws-cdk-lib/aws-glue";
 import { OpenSearchServerlessVectorStore } from "./OpenSearchServerlessVectorStore";
+import { AthenaSnowflakeDataSource } from "./AthenaSnowflakeDataSource";
 
 export interface SageMakerNotebookConfig {
   assetBucket: Bucket;
   database: CfnDatabase;
   vectorStore: OpenSearchServerlessVectorStore;
+  athenaSnowflakeDataSource: AthenaSnowflakeDataSource;
 }
 
 export class SageMakerNotebook extends Construct implements IDependable {
@@ -44,13 +46,17 @@ export class SageMakerNotebook extends Construct implements IDependable {
           statements: [
             new PolicyStatement({
               effect: Effect.ALLOW,
-              actions: ["glue:GetTables"],
+              actions: ["glue:GetTables", "glue:GetDatabase"],
               resources: [`arn:${Aws.PARTITION}:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:database/${config.database.ref}`],
             }),
+
             new PolicyStatement({
               effect: Effect.ALLOW,
               actions: ["bedrock:InvokeModel"],
-              resources: [`arn:${Aws.PARTITION}:bedrock:${Aws.REGION}::foundation-model/amazon.titan-embed-text-v1n`],
+              resources: [
+                `arn:${Aws.PARTITION}:bedrock:${Aws.REGION}::foundation-model/amazon.titan-embed-text-v1`,
+                `arn:${Aws.PARTITION}:bedrock:${Aws.REGION}::foundation-model/anthropic.*`,
+              ],
             }),
             new PolicyStatement({
               effect: Effect.ALLOW,
@@ -62,13 +68,45 @@ export class SageMakerNotebook extends Construct implements IDependable {
               actions: ["aoss:ListCollections"],
               resources: ["*"],
             }),
+
+            new PolicyStatement({
+              effect: Effect.ALLOW,
+              actions: ["aoss:ListCollections"],
+              resources: ["*"],
+            }),
+            new PolicyStatement({
+              effect: Effect.ALLOW,
+              actions: ["athena:*Query*"],
+              resources: [`arn:${Aws.PARTITION}:athena:${Aws.REGION}:${Aws.ACCOUNT_ID}:workgroup/${config.athenaSnowflakeDataSource.workgroup.name}`],
+            }),
+            new PolicyStatement({
+              effect: Effect.ALLOW,
+              actions: ["athena:GetDataCatalog"],
+              resources: [`arn:${Aws.PARTITION}:athena:${Aws.REGION}:${Aws.ACCOUNT_ID}:datacatalog/${config.database.ref}`],
+            }),
+            new PolicyStatement({
+              effect: Effect.ALLOW,
+              actions: ["lambda:InvokeFunction"],
+              resources: [`arn:${Aws.PARTITION}:lambda:${Aws.REGION}:${Aws.ACCOUNT_ID}:function:${config.athenaSnowflakeDataSource.lambdaFunctionName}`],
+            }),
+            new PolicyStatement({
+              effect: Effect.ALLOW,
+              actions: ["s3:ListBucket"],
+              resources: [`${config.assetBucket.bucketArn}`],
+            }),
+            new PolicyStatement({
+              effect: Effect.ALLOW,
+              actions: ["s3:GetObject", "s3:PutObject"],
+              resources: [`${config.athenaSnowflakeDataSource.arnForObjects("*")}`],
+            }),
           ],
         }),
       },
     });
 
     config.vectorStore.grantFullDataAccess("notebook-access-policy", this.role);
-    config.assetBucket.grantRead(this.role);
+    config.athenaSnowflakeDataSource.grantReadWrite(this.role);
+
     const downloadFiles = Fn.base64(`cd /home/ec2-user/SageMaker/ && aws s3 sync ${notebooks.deployedBucket.s3UrlForObject()}/notebooks .`);
     const lifecycleConfig = new CfnNotebookInstanceLifecycleConfig(this, "NotebookInstanceLifecycleConfig", {
       notebookInstanceLifecycleConfigName: "snowflake-text-to-sql-notebook-lifecycle",

@@ -17,8 +17,7 @@ new TextToSqlWithAthenaAndSnowflakeStack(app, "text-to-sql-with-athena-and-snowf
   snowflakeRole: "SYSADMIN",
   snowflakeAccountId: "otzhjhy-glb64226",
   snowflakeWarehouse: "TEST_WH",
-  crawlerPath: "SNOWFLAKE_SAMPLE_DATA/TPCH_SF1/%",
+  crawlerPath: "IMDB/%",
 });
-// new MyStack(app, 'ms-dynamics-365-changes-events-prod', { env: prodEnv });
 
 app.synth();

@@ -43,7 +43,10 @@ export class TextToSqlWithAthenaAndSnowflakeStack extends Stack {
       },
     });
 
-    new AthenaSnowflakeDataSource(this, "SnowflakeDataSource", props);
+    const snowflakeDataSource = new AthenaSnowflakeDataSource(this, "SnowflakeDataSource", {
+      ...props,
+      assetBucket,
+    });
 
     const crawler = new GlueSnowflakeCrawler(this, "GlueSnowflakeCrawler", {
       assetBucket,
@@ -56,6 +59,7 @@ export class TextToSqlWithAthenaAndSnowflakeStack extends Stack {
       assetBucket,
       database: crawler.database,
       vectorStore: vectorStore,
+      athenaSnowflakeDataSource: snowflakeDataSource,
     });
   }
 }

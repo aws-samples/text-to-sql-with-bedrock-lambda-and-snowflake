@@ -14,8 +14,9 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { GetTablesCommand, GetTablesCommandInput, GetTablesCommandOutput, GlueClient, paginateGetTables } from "@aws-sdk/client-glue";
-import { Paginator } from "@smithy/types";
+
+import { BedrockRuntimeClient, InvokeModelCommand, InvokeModelCommandInput, InvokeModelCommandOutput } from "@aws-sdk/client-bedrock-runtime";
+import { GetParameterCommand, GetParameterCommandInput, GetParameterCommandOutput, SSMClient } from "@aws-sdk/client-ssm";
 import { Powertools } from "./Powertools";
 
 export type PaginationConfig = {
@@ -25,7 +26,9 @@ export type PaginationConfig = {
 };
 
 export interface AwsApiCalls {
-  getTablesPaginated(input: GetTablesCommandInput): Paginator<GetTablesCommandOutput>;
+  bedrockRuntimeClient: BedrockRuntimeClient;
+  invokeModel(input: InvokeModelCommandInput): Promise<InvokeModelCommandOutput>;
+  getParameter(input: GetParameterCommandInput): Promise<GetParameterCommandOutput>;
 }
 
 export class Aws implements AwsApiCalls {
@@ -43,7 +46,8 @@ export class Aws implements AwsApiCalls {
   //@ts-ignore
   private _powertools: Powertools | undefined;
 
-  private _glueClient?: GlueClient;
+  private _bedrockRuntimeClient?: BedrockRuntimeClient;
+  private _ssmClient?: SSMClient;
 
   private constructor(config: { [key: string]: any | undefined } = {}, powertools: Powertools | undefined) {
     this.config = config;
@@ -54,31 +58,39 @@ export class Aws implements AwsApiCalls {
     return new Aws(config, powertools);
   }
 
-  private get glueClient(): GlueClient {
-    if (this._glueClient == undefined) {
-      this._glueClient = this._powertools
+  public get bedrockRuntimeClient(): BedrockRuntimeClient {
+    if (this._bedrockRuntimeClient == undefined) {
+      this._bedrockRuntimeClient = this._powertools
         ? this._powertools.tracer.captureAWSv3Client(
-            new GlueClient({
+            new BedrockRuntimeClient({
               ...this.config,
               retryMode: "adaptive",
             }),
           )
-        : new GlueClient(this.config);
+        : new BedrockRuntimeClient(this.config);
     }
-    return this._glueClient;
+    return this._bedrockRuntimeClient;
   }
 
-  async getTables(input: GetTablesCommandInput): Promise<GetTablesCommandOutput> {
-    return this.glueClient.send(new GetTablesCommand(input));
+  private get ssmClient(): SSMClient {
+    if (this._ssmClient == undefined) {
+      this._ssmClient = this._powertools
+        ? this._powertools.tracer.captureAWSv3Client(
+            new SSMClient({
+              ...this.config,
+              retryMode: "adaptive",
+            }),
+          )
+        : new SSMClient(this.config);
+    }
+    return this._ssmClient;
   }
 
-  getTablesPaginated(input: GetTablesCommandInput): Paginator<GetTablesCommandOutput> {
-    return paginateGetTables(
-      {
-        client: this.glueClient,
-        pageSize: 100,
-      },
-      input,
-    );
+  async invokeModel(input: InvokeModelCommandInput): Promise<InvokeModelCommandOutput> {
+    return this.bedrockRuntimeClient.send(new InvokeModelCommand(input));
+  }
+
+  async getParameter(input: GetParameterCommandInput): Promise<GetParameterCommandOutput> {
+    return this.ssmClient.send(new GetParameterCommand(input));
   }
 }

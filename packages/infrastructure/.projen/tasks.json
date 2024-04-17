@@ -169,13 +169,13 @@
       },
       "steps": [
         {
-          "exec": "pnpm dlx npm-check-updates@16 --upgrade --target=minor --peer --dep=dev,peer,prod,optional --filter=@types/sinon,aws-cdk-lib,cdk-assets,cdk-nag,change-case,esbuild,eslint-import-resolver-typescript,eslint-plugin-import,projen,sinon,ts-node,typescript,vitest,@aws-lambda-powertools/logger,@aws-lambda-powertools/metrics,@aws-lambda-powertools/tracer,@aws-sdk/client-glue,@aws-sdk/credential-provider-node,@middy/core,@opensearch-project/opensearch,@smithy/types,@types/aws-lambda"
+          "exec": "pnpm dlx npm-check-updates@16 --upgrade --target=minor --peer --dep=dev,peer,prod,optional --filter=@types/sinon,@types/snowflake-sdk,aws-cdk-lib,cdk-assets,cdk-nag,change-case,esbuild,eslint-import-resolver-typescript,eslint-plugin-import,projen,sinon,ts-node,typescript,vitest,@aws-lambda-powertools/logger,@aws-lambda-powertools/metrics,@aws-lambda-powertools/tracer,@aws-sdk/client-bedrock-runtime,@aws-sdk/client-glue,@aws-sdk/client-ssm,@aws-sdk/credential-provider-node,@langchain/community,@langchain/core,@middy/core,@opensearch-project/opensearch,@smithy/types,@types/aws-lambda,langchain,snowflake-sdk"
         },
         {
           "exec": "pnpm i --no-frozen-lockfile"
         },
         {
-          "exec": "pnpm update @types/node @types/sinon @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk-lib aws-cdk cdk-assets cdk-nag change-case esbuild eslint-import-resolver-typescript eslint-plugin-import eslint projen sinon ts-node typescript vitest @aws-lambda-powertools/logger @aws-lambda-powertools/metrics @aws-lambda-powertools/tracer @aws-sdk/client-glue @aws-sdk/credential-provider-node @middy/core @opensearch-project/opensearch @smithy/types @types/aws-lambda constructs"
+          "exec": "pnpm update @types/node @types/sinon @types/snowflake-sdk @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk-lib aws-cdk cdk-assets cdk-nag change-case esbuild eslint-import-resolver-typescript eslint-plugin-import eslint projen sinon ts-node typescript vitest @aws-lambda-powertools/logger @aws-lambda-powertools/metrics @aws-lambda-powertools/tracer @aws-sdk/client-bedrock-runtime @aws-sdk/client-glue @aws-sdk/client-ssm @aws-sdk/credential-provider-node @langchain/community @langchain/core @middy/core @opensearch-project/opensearch @smithy/types @types/aws-lambda constructs langchain snowflake-sdk"
         },
         {
           "exec": "pnpm dlx projen"
@@ -210,6 +210,18 @@
           "exec": "mkdir -p /tmp/infrastructure/nodejs/node_modules/@text-to-sql-with-athena-and-snowflake/infrastructure"
         },
         {
+          "exec": "mkdir -p /tmp/infrastructure/nodejs/node_modules/@langchain/community"
+        },
+        {
+          "exec": "cp -R /Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/packages/infrastructure/node_modules/@langchain/community/* /tmp/infrastructure/nodejs/node_modules/@langchain/community"
+        },
+        {
+          "exec": "mkdir -p /tmp/infrastructure/nodejs/node_modules/@langchain/core"
+        },
+        {
+          "exec": "cp -R /Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/packages/infrastructure/node_modules/@langchain/core/* /tmp/infrastructure/nodejs/node_modules/@langchain/core"
+        },
+        {
           "exec": "mkdir -p /tmp/infrastructure/nodejs/node_modules/@middy/core"
         },
         {
@@ -220,6 +232,18 @@
         },
         {
           "exec": "cp -R /Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/packages/infrastructure/node_modules/@opensearch-project/opensearch/* /tmp/infrastructure/nodejs/node_modules/@opensearch-project/opensearch"
+        },
+        {
+          "exec": "mkdir -p /tmp/infrastructure/nodejs/node_modules/langchain"
+        },
+        {
+          "exec": "cp -R /Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/packages/infrastructure/node_modules/langchain/* /tmp/infrastructure/nodejs/node_modules/langchain"
+        },
+        {
+          "exec": "mkdir -p /tmp/infrastructure/nodejs/node_modules/snowflake-sdk"
+        },
+        {
+          "exec": "cp -R /Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/packages/infrastructure/node_modules/snowflake-sdk/* /tmp/infrastructure/nodejs/node_modules/snowflake-sdk"
         },
         {
           "exec": "rm -Rf ./lib/runtime",
@@ -234,7 +258,20 @@
           "cwd": "/Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/packages/infrastructure"
         },
         {
-          "exec": "mkdir -p /tmp/imdb"
+          "exec": "esbuild src/runtime/handlers/TextToSql.ts --platform=node  --bundle  --external:@aws-lambda-powertools/logger --external:@aws-lambda-powertools/metrics --external:@aws-lambda-powertools/tracer --external:@aws-sdk/client-bedrock-runtime --external:@aws-sdk/client-glue --external:@aws-sdk/client-ssm --external:@aws-sdk/credential-provider-node --external:@smithy/types --external:@types/aws-lambda --external:constructs  --outfile=lib/runtime/esbuild/TextToSql/index.js"
+        },
+        {
+          "exec": "zip -j -r ./dist/TextToSql.zip lib/runtime/esbuild/TextToSql/index.js"
+        },
+        {
+          "exec": "esbuild src/runtime/handlers/IndexTables.ts --platform=node  --bundle  --external:@aws-lambda-powertools/logger --external:@aws-lambda-powertools/metrics --external:@aws-lambda-powertools/tracer --external:@aws-sdk/client-bedrock-runtime --external:@aws-sdk/client-glue --external:@aws-sdk/client-ssm --external:@aws-sdk/credential-provider-node --external:@smithy/types --external:@types/aws-lambda --external:constructs  --outfile=lib/runtime/esbuild/IndexTables/index.js"
+        },
+        {
+          "exec": "zip -j -r ./dist/IndexTables.zip lib/runtime/esbuild/IndexTables/index.js"
+        },
+        {
+          "exec": "zip -r /Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/packages/infrastructure/dist/lambdas-layer.zip ./nodejs",
+          "cwd": "/tmp/infrastructure"
         },
         {
           "condition": "! test -e /tmp/snowflake-jdbc-3.15.0.jar",

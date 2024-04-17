@@ -10,6 +10,10 @@
       "type": "build"
     },
     {
+      "name": "@types/snowflake-sdk",
+      "type": "build"
+    },
+    {
       "name": "@typescript-eslint/eslint-plugin",
       "version": "^6",
       "type": "build"
@@ -91,11 +95,27 @@
       "type": "runtime"
     },
     {
+      "name": "@aws-sdk/client-bedrock-runtime",
+      "type": "runtime"
+    },
+    {
       "name": "@aws-sdk/client-glue",
       "type": "runtime"
     },
     {
+      "name": "@aws-sdk/client-ssm",
+      "type": "runtime"
+    },
+    {
       "name": "@aws-sdk/credential-provider-node",
+      "type": "runtime"
+    },
+    {
+      "name": "@langchain/community",
+      "type": "runtime"
+    },
+    {
+      "name": "@langchain/core",
       "type": "runtime"
     },
     {
@@ -122,6 +142,14 @@
     {
       "name": "constructs",
       "version": "^10.0.5",
+      "type": "runtime"
+    },
+    {
+      "name": "langchain",
+      "type": "runtime"
+    },
+    {
+      "name": "snowflake-sdk",
       "type": "runtime"
     }
   ],

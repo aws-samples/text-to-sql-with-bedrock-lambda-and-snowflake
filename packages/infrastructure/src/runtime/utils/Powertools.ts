@@ -39,17 +39,18 @@ export class Powertools {
   readonly metrics: Metrics;
   readonly logger: Logger;
   readonly tracer: Tracer;
-
+  readonly serviceName: string;
   public constructor(config: { [key: string]: any | undefined } = {}) {
     const mergedConfig = { ...Powertools.DEFAULT_CONFIG, ...config };
+    this.serviceName = mergedConfig.serviceName;
     this.metrics = new Metrics({
       namespace: mergedConfig.namespace,
-      serviceName: mergedConfig.serviceName,
+      serviceName: this.serviceName,
     });
     this.logger = new Logger({
       // @ts-ignore
       logLevel: mergedConfig.logLevel,
-      serviceName: mergedConfig.serviceName,
+      serviceName: this.serviceName,
     });
     this.tracer = new Tracer({
       serviceName: mergedConfig.serviceName,

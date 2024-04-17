@@ -61,7 +61,8 @@
       "description": "Only compile",
       "steps": [
         {
-          "exec": "tsc --build"
+          "exec": "nx build @text-to-sql-with-athena-and-snowflake/infrastructure",
+          "receiveArgs": true
         }
       ]
     },
@@ -122,15 +123,6 @@
         }
       ]
     },
-    "nx": {
-      "name": "nx",
-      "steps": [
-        {
-          "exec": "nx build @text-to-sql-with-athena-and-snowflake/infrastructure",
-          "receiveArgs": true
-        }
-      ]
-    },
     "package": {
       "name": "package",
       "description": "Creates the distribution package",
@@ -160,6 +152,15 @@
       "steps": [
         {
           "exec": "nx prettier @text-to-sql-with-athena-and-snowflake/infrastructure",
+          "receiveArgs": true
+        }
+      ]
+    },
+    "synth": {
+      "name": "synth",
+      "steps": [
+        {
+          "exec": "nx synth @text-to-sql-with-athena-and-snowflake/infrastructure",
           "receiveArgs": true
         }
       ]

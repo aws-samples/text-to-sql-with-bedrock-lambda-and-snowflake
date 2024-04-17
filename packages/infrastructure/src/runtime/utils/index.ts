@@ -19,10 +19,11 @@ import { SQSEvent, SQSHandler } from "aws-lambda";
 import { Callback, Context, Handler } from "aws-lambda/handler";
 
 import { SQSBatchResponse } from "aws-lambda/trigger/sqs";
-import { AwsApiCalls } from "./Aws";
+import { Aws, AwsApiCalls } from "./Aws";
 
-import { OpenSearchApiCalls } from "./Opensearch";
+import { OpenSearch, OpenSearchApiCalls } from "./OpenSearch";
 import { Powertools } from "./Powertools";
+import { Snowflake, SnowflakeApiCalls } from "./Snowflake";
 
 export * from "./Aws";
 export * from "./Powertools";
@@ -31,6 +32,36 @@ export interface BasicLambdaTools {
   aws: AwsApiCalls;
   powertools: Powertools;
   aoss: OpenSearchApiCalls;
+  snowflake: SnowflakeApiCalls;
+}
+
+export function defaultBasicLambdaTools(powertools: Powertools): BasicLambdaTools {
+  return {
+    aws: Aws.instance({}, powertools),
+    powertools,
+    aoss: OpenSearch.instance(
+      {
+        region: process.env.AOSS_REGION!,
+        node: process.env.AOSS_NODE!,
+        indexName: process.env.AOSS_INDEX_NAME!,
+      },
+      Aws.instance({}, powertools),
+      powertools,
+    ),
+    snowflake: Snowflake.instance(
+      {
+        account: process.env.SNOWFLAKE_ACCOUNT!,
+        database: process.env.SNOWFLAKE_DATABASE!,
+        application: powertools.serviceName,
+        username: process.env.SNOWFLAKE_USER!,
+        warehouse: process.env.SNOWFLAKE_WAREHOUSE!,
+        passwordParameterName: process.env.SNOWFLAKE_PASSWORD_PARAMETER_NAME!,
+        schema: process.env.SNOWFLAKE_SCHEMA!,
+      },
+      Aws.instance({}, powertools),
+      powertools,
+    ),
+  };
 }
 
 export type LambdaHandler<TEvent = any, TResult = any> =

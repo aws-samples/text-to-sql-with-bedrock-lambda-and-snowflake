@@ -15,30 +15,22 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { App, Aspects } from "aws-cdk-lib";
+import * as path from "path";
+import { Aws, RemovalPolicy } from "aws-cdk-lib";
+import { Architecture, Code, ILayerVersion, LayerVersion } from "aws-cdk-lib/aws-lambda";
+import { Construct } from "constructs";
 
-import { TextToSqlWithLambdaAndSnowflakeStack } from "./stacks";
-import { AwsSolutionsChecks } from "cdk-nag";
+export class Layers extends Construct {
+  readonly lambdasLayer: ILayerVersion;
+  readonly powerToolsLayer: ILayerVersion;
 
-// for development, use account/region from cdk cli
-const devEnv = {
-  account: process.env.CDK_DEFAULT_ACCOUNT,
-  region: "us-east-1",
-};
-
-const app = new App();
-
-new TextToSqlWithLambdaAndSnowflakeStack(app, "text-to-sql-with-lambda-and-snowflake", {
-  env: devEnv,
-  aossCollectionName: "imdb",
-  aossIndexName: "imdb-table-metadata",
-  snowflakeUser: "awsgalen",
-  snowflakeDb: "IMDB",
-  snowflakeRole: "SYSADMIN",
-  snowflakeAccountId: "otzhjhy-glb64226",
-  snowflakeWarehouse: "TEST_WH",
-  snowFlakePasswordParameterName: "/text-to-sql-with-lambda-and-snowflake/password",
-  snowflakeSchema: "PUBLIC",
-});
-Aspects.of(app).add(new AwsSolutionsChecks());
-app.synth();
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    this.lambdasLayer = new LayerVersion(this, "Lambdas", {
+      removalPolicy: RemovalPolicy.DESTROY,
+      code: Code.fromAsset(path.join(__dirname, "..", "..", "dist", "lambdas-layer.zip")),
+      compatibleArchitectures: [Architecture.ARM_64, Architecture.X86_64],
+    });
+    this.powerToolsLayer = LayerVersion.fromLayerVersionArn(this, "Powertools", `arn:aws:lambda:${Aws.REGION}:094274105915:layer:AWSLambdaPowertoolsTypeScriptV2:1`);
+  }
+}

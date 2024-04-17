@@ -59,7 +59,7 @@ const main = async () => {
 			},
 			include: ["projen/**/*.ts"]
 		},
-		gitignore: [".DS_Store", ".idea", "*.iml", ".$*", "appsec",'cdk.context.json','metadata.json'],
+		gitignore: [".DS_Store", ".idea", "*.iml", ".$*", "appsec", 'cdk.context.json', 'metadata.json'],
 		// Jest and eslint are disabled at the root as they will be
 		// configured by each subproject. Using a single jest/eslint
 		// config at the root is out of scope for this walkthrough
@@ -87,13 +87,12 @@ const main = async () => {
 		parent: root,
 		cdkVersion,
 		defaultReleaseBranch,
-
+		licensed: false,
 		packageManager: root.package.packageManager,
 		projenCommand: root.projenCommand,
 		minNodeVersion: root.minNodeVersion,
 		projenrcTs: true,
 		sampleCode: false,
-		licensed: false,
 		jest: false,
 		github: false,
 		eslint: true,
@@ -120,19 +119,24 @@ const main = async () => {
 		},
 		releaseTrigger: ReleaseTrigger.manual({}),
 		majorVersion: 0,
-		deps: [	"@aws-lambda-powertools/logger",
+		deps: [
+			"@langchain/community",
+			"@langchain/core",
+			"langchain",
+			"@aws-sdk/client-ssm",
+			"@aws-sdk/client-bedrock-runtime",
+			"snowflake-sdk",
+			"@aws-lambda-powertools/logger",
 			"@aws-lambda-powertools/metrics",
 			"@aws-lambda-powertools/tracer",
 			"@middy/core",
 			"@types/aws-lambda",
-		"@aws-sdk/client-glue",
-		"@smithy/types",
+			"@aws-sdk/client-glue",
+			"@smithy/types",
 			"@opensearch-project/opensearch",
-		"@aws-sdk/credential-provider-node"] /* Runtime dependencies of this module. */,
-		// description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
+			"@aws-sdk/credential-provider-node"],
 		devDeps: [
-
-
+			"@types/snowflake-sdk",
 			"change-case@4.1.2",
 			"aws-cdk-lib",
 			"cdk-assets",
@@ -147,10 +151,11 @@ const main = async () => {
 	new Nx(root); // add nx to root
 	root.package.addField("packageManager", `pnpm@${pnpmVersion}`);
 	root.npmrc.addConfig("auto-install-peers", "true");
-	root.tasks.addTask("nx", {
+	root.tasks.tryFind("compile")?.removeStep(0);
+	root.tasks.addTask("deploy", {
 		receiveArgs: true
 	});
-	root.tasks.addTask("deploy", {
+	root.tasks.addTask("synth", {
 		receiveArgs: true
 	});
 	root.tasks.addTask("destroy", {
@@ -163,8 +168,10 @@ const main = async () => {
 
 	[infrastructure].forEach(value => {
 
-
-		root.tasks.tryFind("nx")?.exec(`nx build ${value.package.packageName}`, {
+		root.tasks.tryFind("synth")?.exec(`nx synth ${value.package.packageName}`, {
+			receiveArgs: true
+		});
+		root.tasks.tryFind("compile")?.exec(`nx build ${value.package.packageName}`, {
 			receiveArgs: true
 		});
 		root.tasks.tryFind("prettier")?.exec(`nx prettier ${value.package.packageName}`, {
@@ -183,7 +190,7 @@ const main = async () => {
 		"@aws-sdk",
 		"@smithy",
 		"@types",
-		"constructs"], (p: NodeProject, _esBuildExternal: string) => {
+		"constructs"], (p: NodeProject, esBuildExternal: string) => {
 		const steps: TaskStep[] = [
 			{
 				exec: "rm -Rf ./lib/runtime",
@@ -197,8 +204,11 @@ const main = async () => {
 				exec: "mkdir ./dist",
 				cwd: p.outdir
 			},
+			...zipLambdaFunction("src/runtime/handlers/TextToSql.ts", esBuildExternal),
+			...zipLambdaFunction("src/runtime/handlers/IndexTables.ts", esBuildExternal),
 			{
-				exec: "mkdir -p /tmp/imdb",
+				exec: `zip -r ${p.outdir}/dist/lambdas-layer.zip ./nodejs`,
+				cwd: `/tmp/${p.name}`
 			},
 			{
 				condition: "! test -e /tmp/snowflake-jdbc-3.15.0.jar",

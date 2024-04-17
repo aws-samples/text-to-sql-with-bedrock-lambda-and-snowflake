@@ -15,30 +15,13 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { App, Aspects } from "aws-cdk-lib";
+export interface SnowflakeConnection {
+  snowflakeAccountId: string;
+  snowflakeDb: string;
+  snowflakeRole: string;
+  snowflakeUser: string;
+  snowflakeWarehouse: string;
+  snowflakeSchema: string;
+}
 
-import { TextToSqlWithLambdaAndSnowflakeStack } from "./stacks";
-import { AwsSolutionsChecks } from "cdk-nag";
-
-// for development, use account/region from cdk cli
-const devEnv = {
-  account: process.env.CDK_DEFAULT_ACCOUNT,
-  region: "us-east-1",
-};
-
-const app = new App();
-
-new TextToSqlWithLambdaAndSnowflakeStack(app, "text-to-sql-with-lambda-and-snowflake", {
-  env: devEnv,
-  aossCollectionName: "imdb",
-  aossIndexName: "imdb-table-metadata",
-  snowflakeUser: "awsgalen",
-  snowflakeDb: "IMDB",
-  snowflakeRole: "SYSADMIN",
-  snowflakeAccountId: "otzhjhy-glb64226",
-  snowflakeWarehouse: "TEST_WH",
-  snowFlakePasswordParameterName: "/text-to-sql-with-lambda-and-snowflake/password",
-  snowflakeSchema: "PUBLIC",
-});
-Aspects.of(app).add(new AwsSolutionsChecks());
-app.synth();
+export * from "./TextToSqlWithLambdaAndSnowflakeStack";

@@ -26,7 +26,7 @@ import { OpenSearchServerlessVectorStore } from "../constructs/OpenSearchServerl
 import { NagSuppressions } from "cdk-nag";
 
 export interface TextToSqlWithLambdaAndSnowflakeStackProps extends StackProps, SnowflakeConnection {
-  snowFlakePasswordParameterName: string;
+  snowflakePasswordParameterName: string;
   aossIndexName: string;
   aossCollectionName: string;
 }
@@ -39,23 +39,23 @@ export class TextToSqlWithLambdaAndSnowflakeStack extends Stack {
       onCreate: {
         service: "SSM",
         action: "PutParameter",
-        physicalResourceId: PhysicalResourceId.of(props.snowFlakePasswordParameterName),
+        physicalResourceId: PhysicalResourceId.of(props.snowflakePasswordParameterName),
         parameters: {
           Type: "SecureString",
           Value: "Replace me after deployment via the console",
           DataType: ParameterDataType.TEXT,
-          Name: props.snowFlakePasswordParameterName,
+          Name: props.snowflakePasswordParameterName,
         },
       },
       onDelete: {
         service: "SSM",
         action: "DeleteParameter",
         parameters: {
-          Name: props.snowFlakePasswordParameterName,
+          Name: props.snowflakePasswordParameterName,
         },
       },
       policy: AwsCustomResourcePolicy.fromSdkCalls({
-        resources: [`arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter/${props.snowFlakePasswordParameterName}`],
+        resources: [`arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter/${props.snowflakePasswordParameterName}`],
       }),
     });
     const vectorStore = new OpenSearchServerlessVectorStore(this, "VectorStore", props.aossCollectionName, "Knowledge base in text-to-sql RAG framework");
@@ -66,7 +66,7 @@ export class TextToSqlWithLambdaAndSnowflakeStack extends Stack {
         ...props,
       },
       vectorStore,
-      snowFlakePasswordParameterName: props.snowFlakePasswordParameterName,
+      snowFlakePasswordParameterName: props.snowflakePasswordParameterName,
       indexName: props.aossIndexName,
     });
     lambdas.node.addDependency(passwordParameter);

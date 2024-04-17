@@ -31,11 +31,11 @@ new TextToSqlWithLambdaAndSnowflakeStack(app, "text-to-sql-with-lambda-and-snowf
   },
   snowflakeAccountId: "otzhjhy-glb64226",
   snowflakeDb: "IMDB",
-  snowflakePassword: "/text-to-sql-with-lambda-and-snowflake/password",
+  snowflakePasswordParameterName: "/text-to-sql-with-lambda-and-snowflake/password",
   snowflakeRole: "SYSADMIN",
   snowflakeSchema: "PUBLIC",
   snowflakeUser: "awsgalen",
-  snowflakeWarehouse: "TEST_WH"
+  snowflakeWarehouse: "TEST_WH",
 });
 Aspects.of(app).add(new AwsSolutionsChecks());
 app.synth();

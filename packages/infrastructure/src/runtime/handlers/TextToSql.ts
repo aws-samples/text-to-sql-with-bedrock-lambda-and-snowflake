@@ -46,7 +46,7 @@ export const onEventHandler: LambdaHandler<Record<string, any>, Record<string, a
         return value.pageContent;
       })
       .join(" ");
-    const prompt = `It is important that the SQL query complies with ANSI sql syntax. During join if column name are same please use alias ex llm.TCONST in select statement. It is also important to respect the type of columns: if a column is string, the value should be enclosed in quotes. If you are writing CTEs then include all the required columns. Be sure to use the database,schema, and table name seperated by '.'. Please print the resulting SQL query in a sql code markdown block. The following json document represents the metadata for the tables in the database: ${pageContents}. Generate SQL answer the following question '${humanQuery}'`;
+    const prompt = `It is important that the SQL query complies with ANSI sql syntax. During join if column name are same please use alias ex llm.TCONST in select statement. It is also important to respect the type of columns: if a column is string, the value should be enclosed in quotes. If you are writing CTEs then include all the required columns. Be sure to use the database, schema, and table name seperated by '.'. When searching for string values, don't apply case sensitivity. If exact match is not found, try wild card search. Please print the resulting SQL query in a sql code markdown block. The following json document represents the metadata for the tables in the database: ${pageContents}. Generate SQL answer the following question '${humanQuery}'`;
     const body = {
       anthropic_version: "bedrock-2023-05-31",
       max_tokens: 3000,

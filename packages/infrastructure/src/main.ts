@@ -20,25 +20,22 @@ import { App, Aspects } from "aws-cdk-lib";
 import { TextToSqlWithLambdaAndSnowflakeStack } from "./stacks";
 import { AwsSolutionsChecks } from "cdk-nag";
 
-// for development, use account/region from cdk cli
-const devEnv = {
-  account: process.env.CDK_DEFAULT_ACCOUNT,
-  region: "us-east-1",
-};
-
 const app = new App();
 
 new TextToSqlWithLambdaAndSnowflakeStack(app, "text-to-sql-with-lambda-and-snowflake", {
-  env: devEnv,
   aossCollectionName: "imdb",
   aossIndexName: "imdb-table-metadata",
-  snowflakeUser: "awsgalen",
-  snowflakeDb: "IMDB",
-  snowflakeRole: "SYSADMIN",
+  env: {
+    account: process.env.CDK_DEFAULT_ACCOUNT,
+    region: "us-east-1",
+  },
   snowflakeAccountId: "otzhjhy-glb64226",
-  snowflakeWarehouse: "TEST_WH",
-  snowFlakePasswordParameterName: "/text-to-sql-with-lambda-and-snowflake/password",
+  snowflakeDb: "IMDB",
+  snowflakePassword: "/text-to-sql-with-lambda-and-snowflake/password",
+  snowflakeRole: "SYSADMIN",
   snowflakeSchema: "PUBLIC",
+  snowflakeUser: "awsgalen",
+  snowflakeWarehouse: "TEST_WH"
 });
 Aspects.of(app).add(new AwsSolutionsChecks());
 app.synth();

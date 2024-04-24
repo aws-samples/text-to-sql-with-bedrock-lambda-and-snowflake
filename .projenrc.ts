@@ -38,7 +38,7 @@ const defaultReleaseBranch = "main";
 
 const cdkVersion = `${execSync("npm show 'aws-cdk-lib' version")}`.trim();
 const nodeVersion = "20.11.1";
-const pnpmVersion = "8.15.3";
+const pnpmVersion = "9.0.5";
 const jsiiReleaseVersion = "1.94.0";
 const namespace = "@text-to-sql-with-athena-and-snowflake";
 const main = async () => {
@@ -59,7 +59,7 @@ const main = async () => {
 			},
 			include: ["projen/**/*.ts"]
 		},
-		gitignore: [".DS_Store", ".idea", "*.iml", ".$*", "appsec", 'cdk.context.json', 'metadata.json'],
+		gitignore: [".DS_Store", ".idea", "*.iml", ".$*", "appsec", 'cdk.context.json', 'metadata.json','key-pair'],
 		// Jest and eslint are disabled at the root as they will be
 		// configured by each subproject. Using a single jest/eslint
 		// config at the root is out of scope for this walkthrough
@@ -209,14 +209,39 @@ const main = async () => {
 			{
 				exec: `zip -r ${p.outdir}/dist/lambdas-layer.zip ./nodejs`,
 				cwd: `/tmp/${p.name}`
-			},
-			{
-				condition: "! test -e /tmp/snowflake-jdbc-3.15.0.jar",
-				exec: "curl -s  https://repo1.maven.org/maven2/net/snowflake/snowflake-jdbc/3.15.0/snowflake-jdbc-3.15.0.jar -o /tmp/snowflake-jdbc-3.15.0.jar"
 			}
 		];
 		return steps;
 	});
+	root.addTask("generate-key-pair",{
+		steps:[
+			{
+				exec: "mkdir -p ./key-pair",
+				cwd: root.outdir
+			},
+			{
+				say: "Generating private key",
+				exec: "openssl genrsa 2048 | openssl pkcs8 -topk8 -v2 des3 -inform PEM -out snowflake.p8 -passout pass:'' -passin pass:'' -nocrypt",
+				cwd: `${root.outdir}/key-pair`
+			},
+			{
+				say: "Generating public key",
+				exec: "openssl rsa -in snowflake.p8 -pubout -out snowflake.pub -passin pass:''",
+				cwd: `${root.outdir}/key-pair`
+			},
+			{
+				say: "Store this value in your SSM Parameter",
+				exec: "cat snowflake.p8",
+				cwd: `${root.outdir}/key-pair`
+			},
+			{
+				say: "Assign this value to your snowflake user (https://docs.snowflake.com/en/user-guide/key-pair-auth#assign-the-public-key-to-a-snowflake-user)",
+				exec: "cat snowflake.pub",
+				cwd: `${root.outdir}/key-pair`
+			},
+
+		]
+	})
 	root.synth();
 };
 

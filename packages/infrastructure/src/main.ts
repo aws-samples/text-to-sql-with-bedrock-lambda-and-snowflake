@@ -19,6 +19,7 @@ import { App, Aspects } from "aws-cdk-lib";
 
 import { TextToSqlWithLambdaAndSnowflakeStack } from "./stacks";
 import { AwsSolutionsChecks } from "cdk-nag";
+import { KeyPairAuthentication } from "./runtime/utils";
 
 const app = new App();
 
@@ -31,10 +32,10 @@ new TextToSqlWithLambdaAndSnowflakeStack(app, "text-to-sql-with-lambda-and-snowf
   },
   snowflakeAccountId: "otzhjhy-glb64226",
   snowflakeDb: "IMDB",
-  snowflakePasswordParameterName: "/text-to-sql-with-lambda-and-snowflake/password",
+  snowflakeAuthentication: new KeyPairAuthentication("DEVELOPER@GALENDUNKLEBERGERHOTMAIL.ONMICROSOFT.COM", "/text-to-sql-with-lambda-and-snowflake/password"),
   snowflakeRole: "SYSADMIN",
   snowflakeSchema: "PUBLIC",
-  snowflakeUser: "awsgalen",
+  snowflakeUser: "developer",
   snowflakeWarehouse: "TEST_WH",
 });
 Aspects.of(app).add(new AwsSolutionsChecks());

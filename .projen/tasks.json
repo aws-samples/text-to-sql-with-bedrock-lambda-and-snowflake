@@ -105,6 +105,35 @@
         }
       ]
     },
+    "generate-key-pair": {
+      "name": "generate-key-pair",
+      "steps": [
+        {
+          "exec": "mkdir -p ./key-pair",
+          "cwd": "/Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake"
+        },
+        {
+          "say": "Generating private key",
+          "exec": "openssl genrsa 2048 | openssl pkcs8 -topk8 -v2 des3 -inform PEM -out snowflake.p8 -passout pass:'' -passin pass:'' -nocrypt",
+          "cwd": "/Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/key-pair"
+        },
+        {
+          "say": "Generating public key",
+          "exec": "openssl rsa -in snowflake.p8 -pubout -out snowflake.pub -passin pass:''",
+          "cwd": "/Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/key-pair"
+        },
+        {
+          "say": "Store this value in your SSM Parameter",
+          "exec": "cat snowflake.p8",
+          "cwd": "/Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/key-pair"
+        },
+        {
+          "say": "Assign this value to your snowflake user (https://docs.snowflake.com/en/user-guide/key-pair-auth#assign-the-public-key-to-a-snowflake-user)",
+          "exec": "cat snowflake.pub",
+          "cwd": "/Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/key-pair"
+        }
+      ]
+    },
     "install": {
       "name": "install",
       "description": "Install project dependencies and update lockfile (non-frozen)",

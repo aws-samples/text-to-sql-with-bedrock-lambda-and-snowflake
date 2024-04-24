@@ -28,10 +28,12 @@ import { Effect, PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { SnowflakeConnection } from "../stacks";
 import { OpenSearchServerlessVectorStore } from "./OpenSearchServerlessVectorStore";
 
+import { SnowflakeAuthentication } from "../runtime/utils";
+
 export interface LambdasConfig {
   layers: Layers;
   snowflakeConnection: SnowflakeConnection;
-  snowFlakePasswordParameterName: string;
+  snowflakeAuthentication: SnowflakeAuthentication;
   vectorStore: OpenSearchServerlessVectorStore;
   indexName: string;
 }
@@ -66,7 +68,7 @@ export class Lambdas extends Construct implements IDependable {
         SNOWFLAKE_DATABASE: config.snowflakeConnection.snowflakeDb,
         SNOWFLAKE_USER: config.snowflakeConnection.snowflakeUser,
         SNOWFLAKE_WAREHOUSE: config.snowflakeConnection.snowflakeWarehouse,
-        SNOWFLAKE_PASSWORD_PARAMETER_NAME: config.snowFlakePasswordParameterName,
+        SNOWFLAKE_AUTHENTICATION: JSON.stringify(config.snowflakeAuthentication),
         SNOWFLAKE_SCHEMA: config.snowflakeConnection.snowflakeSchema,
         AOSS_REGION: Aws.REGION,
         AOSS_NODE: config.vectorStore.collection.attrCollectionEndpoint,
@@ -82,7 +84,7 @@ export class Lambdas extends Construct implements IDependable {
         new PolicyStatement({
           actions: ["ssm:GetParameter"],
           effect: Effect.ALLOW,
-          resources: [`arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${config.snowFlakePasswordParameterName}`],
+          resources: [`arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${config.snowflakeAuthentication.parameterName}`],
         }),
         new PolicyStatement({
           effect: Effect.ALLOW,
@@ -119,7 +121,7 @@ export class Lambdas extends Construct implements IDependable {
         SNOWFLAKE_DATABASE: config.snowflakeConnection.snowflakeDb,
         SNOWFLAKE_USER: config.snowflakeConnection.snowflakeUser,
         SNOWFLAKE_WAREHOUSE: config.snowflakeConnection.snowflakeWarehouse,
-        SNOWFLAKE_PASSWORD_PARAMETER_NAME: config.snowFlakePasswordParameterName,
+        SNOWFLAKE_AUTHENTICATION: JSON.stringify(config.snowflakeAuthentication),
         SNOWFLAKE_SCHEMA: config.snowflakeConnection.snowflakeSchema,
         AOSS_REGION: Aws.REGION,
         AOSS_NODE: config.vectorStore.collection.attrCollectionEndpoint,
@@ -135,7 +137,7 @@ export class Lambdas extends Construct implements IDependable {
         new PolicyStatement({
           actions: ["ssm:GetParameter"],
           effect: Effect.ALLOW,
-          resources: [`arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${config.snowFlakePasswordParameterName}`],
+          resources: [`arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${config.snowflakeAuthentication.parameterName}`],
         }),
         new PolicyStatement({
           effect: Effect.ALLOW,

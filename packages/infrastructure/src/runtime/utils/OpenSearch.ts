@@ -17,11 +17,11 @@
 
 import { defaultProvider } from "@aws-sdk/credential-provider-node";
 import { BedrockEmbeddings } from "@langchain/community/embeddings/bedrock";
+import { OpenSearchVectorStore } from "@langchain/community/vectorstores/opensearch";
 import { Document } from "@langchain/core/documents";
 import { Client, RequestParams } from "@opensearch-project/opensearch";
 import { AwsSigv4Signer } from "@opensearch-project/opensearch/aws";
 import { ApiResponse, Context, TransportRequestOptions } from "@opensearch-project/opensearch/lib/Transport.d.ts";
-import { OpenSearchVectorStore } from "langchain/vectorstores/opensearch";
 import { AwsApiCalls } from "./Aws";
 import { Powertools } from "./Powertools";
 

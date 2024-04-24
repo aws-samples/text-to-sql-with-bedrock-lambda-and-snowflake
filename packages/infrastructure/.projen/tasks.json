@@ -169,13 +169,13 @@
       },
       "steps": [
         {
-          "exec": "pnpm dlx npm-check-updates@16 --upgrade --target=minor --peer --dep=dev,peer,prod,optional --filter=@types/sinon,@types/snowflake-sdk,aws-cdk-lib,cdk-assets,cdk-nag,change-case,esbuild,eslint-import-resolver-typescript,eslint-plugin-import,projen,sinon,ts-node,typescript,vitest,@aws-lambda-powertools/logger,@aws-lambda-powertools/metrics,@aws-lambda-powertools/tracer,@aws-sdk/client-bedrock-runtime,@aws-sdk/client-glue,@aws-sdk/client-ssm,@aws-sdk/credential-provider-node,@langchain/community,@langchain/core,@middy/core,@opensearch-project/opensearch,@smithy/types,@types/aws-lambda,langchain,snowflake-sdk"
+          "exec": "pnpm dlx npm-check-updates@16 --upgrade --target=minor --peer --dep=dev,peer,prod,optional --filter=@types/sinon,@types/snowflake-sdk,aws-cdk-lib,cdk-assets,cdk-nag,esbuild,eslint-import-resolver-typescript,eslint-plugin-import,sinon,ts-node,typescript,vitest,@aws-lambda-powertools/logger,@aws-lambda-powertools/metrics,@aws-lambda-powertools/tracer,@aws-sdk/client-bedrock-runtime,@aws-sdk/client-glue,@aws-sdk/client-ssm,@aws-sdk/credential-provider-node,@langchain/community,@langchain/core,@middy/core,@opensearch-project/opensearch,@smithy/types,@types/aws-lambda,langchain,snowflake-sdk"
         },
         {
           "exec": "pnpm i --no-frozen-lockfile"
         },
         {
-          "exec": "pnpm update @types/node @types/sinon @types/snowflake-sdk @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk-lib aws-cdk cdk-assets cdk-nag change-case esbuild eslint-import-resolver-typescript eslint-plugin-import eslint projen sinon ts-node typescript vitest @aws-lambda-powertools/logger @aws-lambda-powertools/metrics @aws-lambda-powertools/tracer @aws-sdk/client-bedrock-runtime @aws-sdk/client-glue @aws-sdk/client-ssm @aws-sdk/credential-provider-node @langchain/community @langchain/core @middy/core @opensearch-project/opensearch @smithy/types @types/aws-lambda constructs langchain snowflake-sdk"
+          "exec": "pnpm update @types/node @types/sinon @types/snowflake-sdk @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk-lib aws-cdk cdk-assets cdk-nag change-case esbuild eslint-import-resolver-typescript eslint-plugin-import eslint sinon ts-node typescript vitest @aws-lambda-powertools/logger @aws-lambda-powertools/metrics @aws-lambda-powertools/tracer @aws-sdk/client-bedrock-runtime @aws-sdk/client-glue @aws-sdk/client-ssm @aws-sdk/credential-provider-node @langchain/community @langchain/core @middy/core @opensearch-project/opensearch @smithy/types @types/aws-lambda constructs langchain snowflake-sdk"
         },
         {
           "exec": "pnpm dlx projen"
@@ -272,10 +272,6 @@
         {
           "exec": "zip -r /Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/packages/infrastructure/dist/lambdas-layer.zip ./nodejs",
           "cwd": "/tmp/infrastructure"
-        },
-        {
-          "condition": "! test -e /tmp/snowflake-jdbc-3.15.0.jar",
-          "exec": "curl -s  https://repo1.maven.org/maven2/net/snowflake/snowflake-jdbc/3.15.0/snowflake-jdbc-3.15.0.jar -o /tmp/snowflake-jdbc-3.15.0.jar"
         }
       ],
       "cwd": "/Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/packages/infrastructure"

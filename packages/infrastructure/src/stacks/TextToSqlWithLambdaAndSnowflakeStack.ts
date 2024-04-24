@@ -24,9 +24,10 @@ import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from "
 import { ParameterDataType } from "aws-cdk-lib/aws-ssm";
 import { OpenSearchServerlessVectorStore } from "../constructs/OpenSearchServerlessVectorStore";
 import { NagSuppressions } from "cdk-nag";
+import { SnowflakeAuthentication } from "../runtime/utils";
 
 export interface TextToSqlWithLambdaAndSnowflakeStackProps extends StackProps, SnowflakeConnection {
-  snowflakePasswordParameterName: string;
+  snowflakeAuthentication: SnowflakeAuthentication;
   aossIndexName: string;
   aossCollectionName: string;
 }
@@ -35,27 +36,28 @@ export class TextToSqlWithLambdaAndSnowflakeStack extends Stack {
   constructor(scope: Construct, id: string, props: TextToSqlWithLambdaAndSnowflakeStackProps) {
     super(scope, id, props);
     const layers = new Layers(this, "Layers");
-    const passwordParameter = new AwsCustomResource(this, "SnowflakePasswordParameter", {
+
+    const passwordParameter = new AwsCustomResource(this, "SnowflakeAuthenticationParameter", {
       onCreate: {
         service: "SSM",
         action: "PutParameter",
-        physicalResourceId: PhysicalResourceId.of(props.snowflakePasswordParameterName),
+        physicalResourceId: PhysicalResourceId.of(props.snowflakeAuthentication.parameterName),
         parameters: {
           Type: "SecureString",
           Value: "Replace me after deployment via the console",
           DataType: ParameterDataType.TEXT,
-          Name: props.snowflakePasswordParameterName,
+          Name: props.snowflakeAuthentication.parameterName,
         },
       },
       onDelete: {
         service: "SSM",
         action: "DeleteParameter",
         parameters: {
-          Name: props.snowflakePasswordParameterName,
+          Name: props.snowflakeAuthentication.parameterName,
         },
       },
       policy: AwsCustomResourcePolicy.fromSdkCalls({
-        resources: [`arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter/${props.snowflakePasswordParameterName}`],
+        resources: [`arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${props.snowflakeAuthentication.parameterName}`],
       }),
     });
     const vectorStore = new OpenSearchServerlessVectorStore(this, "VectorStore", props.aossCollectionName, "Knowledge base in text-to-sql RAG framework");
@@ -66,7 +68,7 @@ export class TextToSqlWithLambdaAndSnowflakeStack extends Stack {
         ...props,
       },
       vectorStore,
-      snowFlakePasswordParameterName: props.snowflakePasswordParameterName,
+      snowflakeAuthentication: props.snowflakeAuthentication,
       indexName: props.aossIndexName,
     });
     lambdas.node.addDependency(passwordParameter);

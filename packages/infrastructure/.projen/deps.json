@@ -29,7 +29,7 @@
     },
     {
       "name": "aws-cdk",
-      "version": "^2.137.0",
+      "version": "^2.138.0",
       "type": "build"
     },
     {
@@ -60,10 +60,6 @@
     {
       "name": "eslint",
       "version": "^8",
-      "type": "build"
-    },
-    {
-      "name": "projen",
       "type": "build"
     },
     {
@@ -136,7 +132,7 @@
     },
     {
       "name": "aws-cdk-lib",
-      "version": "^2.137.0",
+      "version": "^2.138.0",
       "type": "runtime"
     },
     {

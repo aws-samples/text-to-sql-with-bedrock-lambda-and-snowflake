@@ -23,10 +23,11 @@ import { Aws, AwsApiCalls } from "./Aws";
 
 import { OpenSearch, OpenSearchApiCalls } from "./OpenSearch";
 import { Powertools } from "./Powertools";
-import { Snowflake, SnowflakeApiCalls } from "./Snowflake";
+import { Snowflake, SnowflakeApiCalls, SnowflakeAuthentication } from "./Snowflake";
 
 export * from "./Aws";
 export * from "./Powertools";
+export * from "./Snowflake";
 
 export interface BasicLambdaTools {
   aws: AwsApiCalls;
@@ -35,9 +36,9 @@ export interface BasicLambdaTools {
   snowflake: SnowflakeApiCalls;
 }
 
-export function defaultBasicLambdaTools(powertools: Powertools): BasicLambdaTools {
+export function defaultBasicLambdaTools(config: { [key: string]: any | undefined } = {}, powertools: Powertools): BasicLambdaTools {
   return {
-    aws: Aws.instance({}, powertools),
+    aws: Aws.instance(config, powertools),
     powertools,
     aoss: OpenSearch.instance(
       {
@@ -45,7 +46,7 @@ export function defaultBasicLambdaTools(powertools: Powertools): BasicLambdaTool
         node: process.env.AOSS_NODE!,
         indexName: process.env.AOSS_INDEX_NAME!,
       },
-      Aws.instance({}, powertools),
+      Aws.instance(config, powertools),
       powertools,
     ),
     snowflake: Snowflake.instance(
@@ -53,12 +54,11 @@ export function defaultBasicLambdaTools(powertools: Powertools): BasicLambdaTool
         account: process.env.SNOWFLAKE_ACCOUNT!,
         database: process.env.SNOWFLAKE_DATABASE!,
         application: powertools.serviceName,
-        username: process.env.SNOWFLAKE_USER!,
+        authentication: JSON.parse(process.env.SNOWFLAKE_AUTHENTICATION!) as SnowflakeAuthentication,
         warehouse: process.env.SNOWFLAKE_WAREHOUSE!,
-        passwordParameterName: process.env.SNOWFLAKE_PASSWORD_PARAMETER_NAME!,
         schema: process.env.SNOWFLAKE_SCHEMA!,
       },
-      Aws.instance({}, powertools),
+      Aws.instance(config, powertools),
       powertools,
     ),
   };

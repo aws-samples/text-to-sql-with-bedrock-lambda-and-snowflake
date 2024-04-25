@@ -19,7 +19,7 @@ import { App, Aspects } from "aws-cdk-lib";
 
 import { TextToSqlWithLambdaAndSnowflakeStack } from "./stacks";
 import { AwsSolutionsChecks } from "cdk-nag";
-import { KeyPairAuthentication } from "./runtime/utils";
+import { OAuthClientCredentialsAuthentication } from "./runtime/utils";
 
 const app = new App();
 
@@ -32,7 +32,14 @@ new TextToSqlWithLambdaAndSnowflakeStack(app, "text-to-sql-with-lambda-and-snowf
   },
   snowflakeAccountId: "otzhjhy-glb64226",
   snowflakeDb: "IMDB",
-  snowflakeAuthentication: new KeyPairAuthentication("DEVELOPER@GALENDUNKLEBERGERHOTMAIL.ONMICROSOFT.COM", "/text-to-sql-with-lambda-and-snowflake/password"),
+  // snowflakeAuthentication: new KeyPairAuthentication("84646402-7404-4831-9a71-a4b44dbcecdd", "/text-to-sql-with-lambda-and-snowflake/password"),
+  snowflakeAuthentication: new OAuthClientCredentialsAuthentication(
+    "84646402-7404-4831-9a71-a4b44dbcecdd",
+    "/text-to-sql-with-lambda-and-snowflake/client-credentials",
+    "https://login.microsoftonline.com/4b35c00f-2bc0-4f69-b529-56debf3e163d/oauth2/v2.0/token",
+    "99291312-a9a0-4ab7-b156-5b3e538f8c2d",
+    "https://otzhjhy-glb64226.snowflakecomputing.com/.default",
+  ),
   snowflakeRole: "SYSADMIN",
   snowflakeSchema: "PUBLIC",
   snowflakeUser: "developer",

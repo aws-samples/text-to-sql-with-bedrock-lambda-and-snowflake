@@ -21,9 +21,9 @@ import { Callback, Context, Handler } from "aws-lambda/handler";
 import { SQSBatchResponse } from "aws-lambda/trigger/sqs";
 import { Aws, AwsApiCalls } from "./Aws";
 
-import { OpenSearch, OpenSearchApiCalls } from "./OpenSearch";
+import { OpenSearch, OpenSearchApiCalls, OpenSearchConfig } from "./OpenSearch";
 import { Powertools } from "./Powertools";
-import { Snowflake, SnowflakeApiCalls, SnowflakeAuthentication } from "./Snowflake";
+import { Snowflake, SnowflakeApiCalls, SnowflakeAuthentication, SnowflakeConfig } from "./Snowflake";
 
 export * from "./Aws";
 export * from "./Powertools";
@@ -36,27 +36,39 @@ export interface BasicLambdaTools {
   snowflake: SnowflakeApiCalls;
 }
 
-export function defaultBasicLambdaTools(config: { [key: string]: any | undefined } = {}, powertools: Powertools): BasicLambdaTools {
+export interface BasicLambdaToolsConfig {
+  awsConfig: { [key: string]: any | undefined };
+  aossConfig: OpenSearchConfig;
+  snowflakeConfig: SnowflakeConfig;
+}
+
+export function defaultBasicLambdaTools(
+  powertools: Powertools,
+  config: BasicLambdaToolsConfig = {
+    awsConfig: {},
+    aossConfig: {
+      region: process.env.AOSS_REGION!,
+      node: process.env.AOSS_NODE!,
+      indexName: process.env.AOSS_INDEX_NAME!,
+    },
+    snowflakeConfig: {
+      account: process.env.SNOWFLAKE_ACCOUNT!,
+      database: process.env.SNOWFLAKE_DATABASE!,
+      application: "Default",
+      authentication: JSON.parse(process.env.SNOWFLAKE_AUTHENTICATION!) as SnowflakeAuthentication,
+      warehouse: process.env.SNOWFLAKE_WAREHOUSE!,
+      schema: process.env.SNOWFLAKE_SCHEMA!,
+    },
+  },
+): BasicLambdaTools {
   return {
-    aws: Aws.instance(config, powertools),
+    aws: Aws.instance(config.awsConfig, powertools),
     powertools,
-    aoss: OpenSearch.instance(
-      {
-        region: process.env.AOSS_REGION!,
-        node: process.env.AOSS_NODE!,
-        indexName: process.env.AOSS_INDEX_NAME!,
-      },
-      Aws.instance(config, powertools),
-      powertools,
-    ),
+    aoss: OpenSearch.instance(config.aossConfig, Aws.instance(config, powertools), powertools),
     snowflake: Snowflake.instance(
       {
-        account: process.env.SNOWFLAKE_ACCOUNT!,
-        database: process.env.SNOWFLAKE_DATABASE!,
+        ...config.snowflakeConfig,
         application: powertools.serviceName,
-        authentication: JSON.parse(process.env.SNOWFLAKE_AUTHENTICATION!) as SnowflakeAuthentication,
-        warehouse: process.env.SNOWFLAKE_WAREHOUSE!,
-        schema: process.env.SNOWFLAKE_SCHEMA!,
       },
       Aws.instance(config, powertools),
       powertools,

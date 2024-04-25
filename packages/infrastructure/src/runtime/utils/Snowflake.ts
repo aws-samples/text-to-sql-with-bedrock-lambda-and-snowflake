@@ -48,6 +48,9 @@ export abstract class AbstractSnowflakeAuthentication implements SnowflakeAuthen
   abstract get type(): SnowflakeAuthenticationTypes;
 }
 
+/**
+ * Uses native snowflake username and password authentication
+ */
 export class UsernameAndPasswordAuthentication extends AbstractSnowflakeAuthentication {
   readonly type: SnowflakeAuthenticationTypes = SnowflakeAuthenticationTypes.UsernameAndPassword;
 
@@ -56,6 +59,11 @@ export class UsernameAndPasswordAuthentication extends AbstractSnowflakeAuthenti
   }
 }
 
+/**
+ * Uses snowflake key-pair authentication. Private key is stored in SSM Parameter Store as a SecureString
+ *
+ * See https://docs.snowflake.com/en/developer-guide/node-js/nodejs-driver-authenticate#using-key-pair-authentication-and-key-pair-rotation
+ */
 export class KeyPairAuthentication extends AbstractSnowflakeAuthentication {
   readonly type: SnowflakeAuthenticationTypes = SnowflakeAuthenticationTypes.KeyPair;
 
@@ -64,6 +72,11 @@ export class KeyPairAuthentication extends AbstractSnowflakeAuthentication {
   }
 }
 
+/**
+ * Uses snowflake external OAuth authentication with Client Credentials flow. Client secret is stored in SSM Parameter Store as a SecureString
+ *
+ * See https://docs.snowflake.com/en/developer-guide/node-js/nodejs-driver-authenticate#using-oauth
+ */
 export class OAuthClientCredentialsAuthentication extends AbstractSnowflakeAuthentication {
   readonly type: SnowflakeAuthenticationTypes = SnowflakeAuthenticationTypes.OAuthClientCredentials;
   readonly tokenUrl: string;

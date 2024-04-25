@@ -28,23 +28,40 @@ This architecture uses the following services
 * `pnpm install`
 * `pnpm run default`
 * Edit the parameters in [main.ts](packages%2Finfrastructure%2Fsrc%2Fmain.ts)
-  * aossCollectionName
-  * aossIndexName
+  * aossCollectionName - The name of the Amazon OpenSearch Serverless Collection
+  * aossIndexName - The name of the OpenSearch index which will store the vectorized snowflake metadata
   * env: 
-    * account
-    * region
-  * snowflakeAccountId
-  * snowflakeDb
-  * snowflakeRole
-  * snowflakeSchema
-  * snowflakeUser
-  * snowflakeWarehouse
+    * account - Aws account id to deploy to 
+    * region - Aws region to deploy to
+  * snowflakeAccountId - The snowflake account id (i.e. "\<organization>-\<account>")
+  * snowflakeDb - The snowflake database to use
+  * snowflakeAuthentication - One of the allowed [authentication types](packages%2Finfrastructure%2Fsrc%2Fruntime%2Futils%2FSnowflake.ts#L94). For more information see [Snowflake Authentication Methods](#Snowflake_Authentication_Methods)
+  * snowflakeRole - The snowflake role used to access the snowflake database
+  * snowflakeSchema - The snowflake schema to use
+  * snowflakeWarehouse - The snowflake warehouse to use
 * `pnpm run deploy`
-* Post deployment, go to SSM parameter store in the AWS Console and input your Snowflake password into the /text-to-sql-with-lambda-and-snowflake/password parameters.
+* Post deployment, go to SSM parameter store in the AWS Console and input your Snowflake password into the parameter configured in your snowflakeAuthentication settings.
 * Invoke the "IndexTablesFunction" to index the table metadata
 * Invoke the "TextToSqlFunction" with the following payload
 ```json
 {
-  "human": "show me all non-adult movie titles from 1980"
+  "human": "Ask your snowflake data a natural language question here"
 } 
 ```
+
+### Snowflake Authentication Methods
+
+The example provides three different ways to authenticate to Snowflake. 
+
+* [UsernameAndPasswordAuthentication](packages%2Finfrastructure%2Fsrc%2Fruntime%2Futils%2FSnowflake.ts#L54) - Uses native Snowflake username and password authentication.
+  * username - The Snowflake username
+  * parameterName - The name of the SSM Parameter store parameter where the Snowflake password is stored as a secure string
+* [KeyPairAuthentication](packages%2Finfrastructure%2Fsrc%2Fruntime%2Futils%2FSnowflake.ts#L67) - Uses snowflake key-pair authentication. Private key is stored in SSM Parameter Store as a SecureString. See ["Using key-pair authentication and key-pair rotation"](https://docs.snowflake.com/en/developer-guide/node-js/nodejs-driver-authenticate#using-key-pair-authentication-and-key-pair-rotation) in the Snowflake docs for more information.
+  * username - The Snowflake username
+  * parameterName - The name of the SSM Parameter store parameter where the private key is stored as a secure string
+* [OAuthClientCredentialsAuthentication](packages%2Finfrastructure%2Fsrc%2Fruntime%2Futils%2FSnowflake.ts#L80) - Uses snowflake external OAuth authentication with Client Credentials flow. Client secret is stored in SSM Parameter Store as a SecureString. See ["Using OAuth"](https://docs.snowflake.com/en/developer-guide/node-js/nodejs-driver-authenticate#using-oauth) in the Snowflake docs for more information.
+  * username - The Snowflake username
+  * parameterName - The name of the SSM Parameter store parameter where the OAuth client secret is stored as a secure string
+  * tokenUrl - The url to exchange client credentials for an OAuth token
+  * clientId - The OAuth client id
+  * scope - The OAuth scope

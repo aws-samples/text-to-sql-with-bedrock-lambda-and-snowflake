@@ -34,7 +34,7 @@ export const onEventHandler: LambdaHandler<Record<string, any>, Record<string, a
   event: Record<string, any>,
   _context: Context,
   _callback: Callback<Record<string, any>>,
-  tools: BasicLambdaTools = defaultBasicLambdaTools({}, powertools),
+  tools: BasicLambdaTools = defaultBasicLambdaTools(powertools),
 ): Promise<Record<string, any>> => {
   const logger = tools.powertools.logger;
   logger.info(`Event: ${JSON.stringify(event)}`);

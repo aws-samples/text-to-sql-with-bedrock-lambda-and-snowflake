@@ -19,7 +19,7 @@ export interface SnowflakeConnection {
   snowflakeAccountId: string;
   snowflakeDb: string;
   snowflakeRole: string;
-  snowflakeUser: string;
+
   snowflakeWarehouse: string;
   snowflakeSchema: string;
 }

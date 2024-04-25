@@ -35,7 +35,7 @@ This architecture uses the following services
     * region - Aws region to deploy to
   * snowflakeAccountId - The snowflake account id (i.e. "\<organization>-\<account>")
   * snowflakeDb - The snowflake database to use
-  * snowflakeAuthentication - One of the allowed [authentication types](packages%2Finfrastructure%2Fsrc%2Fruntime%2Futils%2FSnowflake.ts#L94). For more information see [Snowflake Authentication Methods](#Snowflake_Authentication_Methods)
+  * snowflakeAuthentication - One of the allowed [authentication types](packages%2Finfrastructure%2Fsrc%2Fruntime%2Futils%2FSnowflake.ts#L94). For more information see [Snowflake Authentication Methods](#Snowflake-Authentication-Methods)
   * snowflakeRole - The snowflake role used to access the snowflake database
   * snowflakeSchema - The snowflake schema to use
   * snowflakeWarehouse - The snowflake warehouse to use

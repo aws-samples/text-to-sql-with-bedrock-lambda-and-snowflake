@@ -16,7 +16,7 @@
  */
 
 import {afterEach, beforeAll, beforeEach, describe, expect, it, vi} from "vitest";
-import {defaultBasicLambdaTools, KeyPairAuthentication, OAuthClientCredentialsAuthentication, Powertools, Snowflake} from "../../../src/runtime/utils";
+import {defaultBasicLambdaTools, KeyPairAuthentication, OAuthClientCredentialsAuthentication, Powertools} from "../../../src/runtime/utils";
 import {createSandbox, SinonSandbox} from "sinon";
 
 

@@ -39,6 +39,7 @@ This architecture uses the following services
   * snowflakeRole - The snowflake role used to access the snowflake database
   * snowflakeSchema - The snowflake schema to use
   * snowflakeWarehouse - The snowflake warehouse to use
+  * snowflakePrivateLinkConfig - [Optional] Configures the example to use AWS PrivateLink to connect to Snowflake. See [Connect to Snowflake over AWS PrivateLink](#Connect-to-Snowflake-over-Aws-PrivateLink) for more information.
 * `pnpm run deploy`
 * Post deployment, go to SSM parameter store in the AWS Console and input your Snowflake password into the parameter configured in your snowflakeAuthentication settings.
 * Invoke the "IndexTablesFunction" to index the table metadata
@@ -65,3 +66,20 @@ The example provides three different ways to authenticate to Snowflake.
   * tokenUrl - The url to exchange client credentials for an OAuth token
   * clientId - The OAuth client id
   * scope - The OAuth scope
+
+### Connect to Snowflake over AWS PrivateLink
+
+It is possible to connect to Snowflake without traversing the public internet by using [AWS PrivateLink](https://docs.aws.amazon.com/vpc/latest/privatelink/what-is-privatelink.html).
+To use AWS PrivateLink in this example you must first [enable AWS PrivateLink for your Snowflake account](https://docs.snowflake.com/en/user-guide/admin-security-privatelink).
+Once enabled retrieve the `privatelink-vpce-id` value returned by the [SYSTEM$GET_PRIVATELINK_CONFIG](https://docs.snowflake.com/en/sql-reference/functions/system_get_privatelink_config) function.
+Configure the `snowflakePrivateLinkConfig` parameter in [main.ts](packages%2Finfrastructure%2Fsrc%2Fmain.ts).
+
+```javascript
+new TextToSqlWithLambdaAndSnowflakeStack(app, "text-to-sql-with-lambda-and-snowflake", {
+    ...
+    snowflakePrivateLinkConfig: {
+      vpceId: "<privatelink-vpce-id>"
+    }
+    ...
+}
+```

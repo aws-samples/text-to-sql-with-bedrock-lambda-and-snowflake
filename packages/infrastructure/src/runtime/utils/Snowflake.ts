@@ -16,7 +16,7 @@
  */
 
 import { request } from "node:https";
-import { Connection, ConnectionOptions, createConnection } from "snowflake-sdk";
+import { configure, Connection, ConnectionOptions, createConnection } from "snowflake-sdk";
 import { AwsApiCalls } from "./Aws";
 import { Powertools } from "./Powertools";
 
@@ -210,6 +210,10 @@ export class Snowflake implements SnowflakeApiCalls {
       this._powertools?.logger.info(`Options ${JSON.stringify(options)}`);
       const pt = this._powertools;
       this._connection = await new Promise(function (resolve, reject) {
+        configure({
+          // @ts-ignore
+          logLevel: process.env.SNOWFLAKE_LOG_LEVEL != undefined ? process.env.SNOWFLAKE_LOG_LEVEL : "INFO",
+        });
         const con = createConnection(options);
         con.connect((err, conn) => {
           if (err != undefined) {

@@ -65,6 +65,7 @@ export class Aws implements AwsApiCalls {
             new BedrockRuntimeClient({
               ...this.config,
               retryMode: "adaptive",
+              logger: this._powertools.logger,
             }),
           )
         : new BedrockRuntimeClient(this.config);
@@ -79,6 +80,7 @@ export class Aws implements AwsApiCalls {
             new SSMClient({
               ...this.config,
               retryMode: "adaptive",
+              logger: this._powertools.logger,
             }),
           )
         : new SSMClient(this.config);

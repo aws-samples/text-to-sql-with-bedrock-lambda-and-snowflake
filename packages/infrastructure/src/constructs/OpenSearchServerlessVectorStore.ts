@@ -15,10 +15,11 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { CfnAccessPolicy, CfnCollection, CfnSecurityPolicy } from "aws-cdk-lib/aws-opensearchserverless";
+import { CfnAccessPolicy, CfnCollection, CfnSecurityPolicy, CfnVpcEndpoint } from "aws-cdk-lib/aws-opensearchserverless";
 import { Construct, Dependable, IDependable } from "constructs";
 import { paramCase } from "change-case";
 import { IRole } from "aws-cdk-lib/aws-iam";
+import { IVpc, SecurityGroup, SubnetSelection } from "aws-cdk-lib/aws-ec2";
 
 export interface ResourceRule {
   ResourceType: string;
@@ -46,10 +47,18 @@ export interface AccessPolicy {
   Principal: string[];
 }
 
+export interface OpenSearchServerlessVectorStoreConfig {
+  name: string;
+  description: string;
+  vpc?: IVpc;
+  subnets?: SubnetSelection;
+  securityGroups?: SecurityGroup[];
+}
+
 export class OpenSearchServerlessVectorStore extends Construct implements IDependable {
   readonly collection: CfnCollection;
 
-  constructor(scope: Construct, id: string, name: string, description: string) {
+  constructor(scope: Construct, id: string, config: OpenSearchServerlessVectorStoreConfig) {
     super(scope, id);
     Dependable.implement(this, {
       dependencyRoots: [this],
@@ -61,8 +70,8 @@ export class OpenSearchServerlessVectorStore extends Construct implements IDepen
       },
     });
     this.collection = new CfnCollection(this, "Collection", {
-      name: name,
-      description: description,
+      name: config.name,
+      description: config.description,
       type: "VECTORSEARCH",
     });
 
@@ -92,14 +101,40 @@ export class OpenSearchServerlessVectorStore extends Construct implements IDepen
       },
     ];
 
+    if (config.vpc != undefined) {
+      const vpce = new CfnVpcEndpoint(this, "AossVpce", {
+        name: `${config.name}-vpce`,
+        vpcId: config.vpc.vpcId,
+        subnetIds: config.vpc.selectSubnets(config.subnets).subnetIds,
+        securityGroupIds: config.securityGroups?.map((value) => {
+          return value.securityGroupId;
+        }),
+      });
+      const vpcePolicy = {
+        Description: "VPCE",
+        AllowFromPublic: false,
+        SourceVPCEs: [vpce.ref],
+        Rules: [
+          {
+            ResourceType: "collection",
+            Resource: [`collection/${this.collection.name}`],
+          },
+          {
+            ResourceType: "dashboard",
+            Resource: [`collection/${this.collection.name}`],
+          },
+        ],
+      };
+      networkPolicies.push(vpcePolicy);
+    }
     const cfnEncryptionPolicy = new CfnSecurityPolicy(this, "SecurityPolicy", {
-      name: `${paramCase(name)}-security-policy`,
+      name: `${paramCase(config.name)}-security-policy`,
       type: "encryption",
       policy: JSON.stringify(encryptionPolicy),
     });
 
     const cfnNetworkPolicy = new CfnSecurityPolicy(this, "NetworkPolicy", {
-      name: `${paramCase(name)}-network-policy`,
+      name: `${paramCase(config.name)}-network-policy`,
       type: "network",
       policy: JSON.stringify(networkPolicies),
     });

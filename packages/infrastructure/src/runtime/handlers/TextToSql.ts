@@ -39,8 +39,10 @@ export const onEventHandler: LambdaHandler<Record<string, any>, Record<string, a
   const logger = tools.powertools.logger;
   logger.info(`Event: ${JSON.stringify(event)}`);
   const humanQuery = event.human;
+  logger.debug("Searching vector store");
   const vectorSearchResults = await tools.aoss.similaritySearch(humanQuery, 10);
   if (vectorSearchResults.length > 0) {
+    logger.debug(`Found ${vectorSearchResults.length} results`);
     const pageContents = vectorSearchResults
       .map((value) => {
         return value.pageContent;

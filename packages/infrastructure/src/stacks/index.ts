@@ -19,7 +19,6 @@ export interface SnowflakeConnection {
   snowflakeAccountId: string;
   snowflakeDb: string;
   snowflakeRole: string;
-
   snowflakeWarehouse: string;
   snowflakeSchema: string;
 }

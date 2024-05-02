@@ -17,7 +17,7 @@
 
 import * as path from "path";
 import { Aws, Duration, RemovalPolicy } from "aws-cdk-lib";
-import { Architecture, Code, Function, IFunction, Runtime } from "aws-cdk-lib/aws-lambda";
+import { Architecture, Code, Function, IFunction, Runtime, Tracing } from "aws-cdk-lib/aws-lambda";
 
 import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 
@@ -29,6 +29,7 @@ import { SnowflakeConnection } from "../stacks";
 import { OpenSearchServerlessVectorStore } from "./OpenSearchServerlessVectorStore";
 
 import { SnowflakeAuthentication } from "../runtime/utils";
+import { IVpc, SecurityGroup, SelectedSubnets } from "aws-cdk-lib/aws-ec2";
 
 export interface LambdasConfig {
   layers: Layers;
@@ -36,7 +37,12 @@ export interface LambdasConfig {
   snowflakeAuthentication: SnowflakeAuthentication;
   vectorStore: OpenSearchServerlessVectorStore;
   indexName: string;
+  vpc?: IVpc;
+  securityGroups?: SecurityGroup[];
+  selectedSubnets?: SelectedSubnets;
 }
+
+export interface SnowflakePrivateLinkLambdaConfig {}
 
 export class Lambdas extends Construct implements IDependable {
   readonly textToSql: IFunction;
@@ -64,14 +70,16 @@ export class Lambdas extends Construct implements IDependable {
       code: Code.fromAsset(path.join(__dirname, "..", "..", "dist", "TextToSql.zip")),
       environment: {
         LOG_LEVEL: "DEBUG",
-        SNOWFLAKE_ACCOUNT: config.snowflakeConnection.snowflakeAccountId,
+        SNOWFLAKE_ACCOUNT: config.vpc != undefined ? `${config.snowflakeConnection.snowflakeAccountId}.privatelink` : config.snowflakeConnection.snowflakeAccountId,
         SNOWFLAKE_DATABASE: config.snowflakeConnection.snowflakeDb,
         SNOWFLAKE_WAREHOUSE: config.snowflakeConnection.snowflakeWarehouse,
         SNOWFLAKE_AUTHENTICATION: JSON.stringify(config.snowflakeAuthentication),
         SNOWFLAKE_SCHEMA: config.snowflakeConnection.snowflakeSchema,
+        SNOWFLAKE_LOG_LEVEL: "TRACE",
         AOSS_REGION: Aws.REGION,
         AOSS_NODE: config.vectorStore.collection.attrCollectionEndpoint,
         AOSS_INDEX_NAME: config.indexName,
+        DEBUG: "opensearch",
       },
       memorySize: 256,
       architecture: Architecture.ARM_64,
@@ -79,6 +87,10 @@ export class Lambdas extends Construct implements IDependable {
       runtime: Runtime.NODEJS_LATEST,
       logGroup: textToSqlFunctionLogGroup,
       layers: [config.layers.powerToolsLayer, config.layers.lambdasLayer],
+      vpc: config.vpc,
+      vpcSubnets: config.selectedSubnets,
+      securityGroups: config.securityGroups,
+      tracing: Tracing.ACTIVE,
       initialPolicy: [
         new PolicyStatement({
           actions: ["ssm:GetParameter"],
@@ -116,14 +128,16 @@ export class Lambdas extends Construct implements IDependable {
       code: Code.fromAsset(path.join(__dirname, "..", "..", "dist", "IndexTables.zip")),
       environment: {
         LOG_LEVEL: "DEBUG",
-        SNOWFLAKE_ACCOUNT: config.snowflakeConnection.snowflakeAccountId,
+        SNOWFLAKE_ACCOUNT: config.vpc != undefined ? `${config.snowflakeConnection.snowflakeAccountId}.privatelink` : config.snowflakeConnection.snowflakeAccountId,
         SNOWFLAKE_DATABASE: config.snowflakeConnection.snowflakeDb,
         SNOWFLAKE_WAREHOUSE: config.snowflakeConnection.snowflakeWarehouse,
         SNOWFLAKE_AUTHENTICATION: JSON.stringify(config.snowflakeAuthentication),
         SNOWFLAKE_SCHEMA: config.snowflakeConnection.snowflakeSchema,
+        SNOWFLAKE_LOG_LEVEL: "TRACE",
         AOSS_REGION: Aws.REGION,
         AOSS_NODE: config.vectorStore.collection.attrCollectionEndpoint,
         AOSS_INDEX_NAME: config.indexName,
+        DEBUG: "opensearch",
       },
       memorySize: 256,
       architecture: Architecture.ARM_64,
@@ -131,6 +145,10 @@ export class Lambdas extends Construct implements IDependable {
       runtime: Runtime.NODEJS_LATEST,
       logGroup: indexTablesFunctionLogGroup,
       layers: [config.layers.powerToolsLayer, config.layers.lambdasLayer],
+      vpc: config.vpc,
+      tracing: Tracing.ACTIVE,
+      vpcSubnets: config.selectedSubnets,
+      securityGroups: config.securityGroups,
       initialPolicy: [
         new PolicyStatement({
           actions: ["ssm:GetParameter"],

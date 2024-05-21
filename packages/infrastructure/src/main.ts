@@ -49,6 +49,7 @@ new TextToSqlWithLambdaAndSnowflakeStack(app, "text-to-sql-with-lambda-and-snowf
     vpcId: "vpc-0a48c23d6da73b3f4",
     subnets: {
       subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+      onePerAz:true,
     },
   },
 });

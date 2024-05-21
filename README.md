@@ -40,6 +40,9 @@ This architecture uses the following services
   * snowflakeSchema - The snowflake schema to use
   * snowflakeWarehouse - The snowflake warehouse to use
   * snowflakePrivateLinkConfig - [Optional] Configures the example to use AWS PrivateLink to connect to Snowflake. See [Connect to Snowflake over AWS PrivateLink](#Connect-to-Snowflake-over-Aws-PrivateLink) for more information.
+  * vpcConfig - [Optional] Configures the lambdas to use a vpc
+    * vpcId - [Optional] The id of an existing VPC to deploy to. If not specified a new vpc will be created
+    * subnets - [Optional] A subnet selection to determine what subnets the lambdas will be deployed in. If not specified defaults to PRIVATE_ISOLATED.
 * `pnpm run deploy`
 * Post deployment, go to SSM parameter store in the AWS Console and input your Snowflake password into the parameter configured in your snowflakeAuthentication settings.
 * Invoke the "IndexTablesFunction" to index the table metadata

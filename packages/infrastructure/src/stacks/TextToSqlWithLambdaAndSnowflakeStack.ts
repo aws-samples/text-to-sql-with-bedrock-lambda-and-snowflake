@@ -48,6 +48,7 @@ export interface TextToSqlWithLambdaAndSnowflakeStackProps extends StackProps, S
    * Optional config if you want to use AWS PrivateLink to connect to Snowflake
    */
   snowflakePrivateLinkConfig?: SnowflakePrivateLinkConfig;
+  vpcConfig?: VpcConfig;
 }
 
 /**
@@ -58,6 +59,9 @@ export interface SnowflakePrivateLinkConfig {
    * The privatelink-vpce-id value returned by the  SYSTEM$GET_PRIVATELINK_CONFIG function
    */
   vpceId: string;
+}
+
+export interface VpcConfig {
   /**
    * An optional vpc id of an existing vpc. If not provided an VPC is created
    */
@@ -75,10 +79,10 @@ export class TextToSqlWithLambdaAndSnowflakeStack extends Stack {
     let vpc: IVpc | undefined = undefined;
     let securityGroups: SecurityGroup[] | undefined = undefined;
     let selectedSubnets: SelectedSubnets | undefined = undefined;
-    if (props.snowflakePrivateLinkConfig != undefined) {
-      if (props.snowflakePrivateLinkConfig.vpcId != undefined) {
+    if (props.vpcConfig != undefined) {
+      if (props.vpcConfig.vpcId != undefined) {
         vpc = Vpc.fromLookup(this, "Vpc", {
-          vpcId: props.snowflakePrivateLinkConfig.vpcId,
+          vpcId: props.vpcConfig.vpcId,
         });
       } else {
         const vpcFlowLogsLogGroup = new LogGroup(this, "VpcFlowLogsLogGroup", {
@@ -112,20 +116,12 @@ export class TextToSqlWithLambdaAndSnowflakeStack extends Stack {
       snowflakeVpcSecurityGroup.addIngressRule(snowflakeVpcSecurityGroup, Port.HTTP, "Allow http");
       securityGroups = [snowflakeVpcSecurityGroup];
       selectedSubnets =
-        props.snowflakePrivateLinkConfig.subnets != undefined
-          ? vpc.selectSubnets(props.snowflakePrivateLinkConfig.subnets)
+        props.vpcConfig?.subnets != undefined
+          ? vpc.selectSubnets(props.vpcConfig.subnets)
           : vpc.selectSubnets({
               subnetType: SubnetType.PRIVATE_ISOLATED,
             });
-      const snowflakeInterfaceEndpoint = vpc.addInterfaceEndpoint("SnowflakeVpce", {
-        subnets: selectedSubnets,
-        securityGroups: securityGroups,
-        service: {
-          name: props.snowflakePrivateLinkConfig.vpceId,
-          port: 443,
-        },
-        privateDnsEnabled: false,
-      });
+
       vpc.addInterfaceEndpoint("BedrockRuntimeVpce", {
         subnets: selectedSubnets,
         securityGroups: securityGroups,
@@ -137,18 +133,28 @@ export class TextToSqlWithLambdaAndSnowflakeStack extends Stack {
       //
       //   service: InterfaceVpcEndpointAwsService.S3,
       // });
+      if (props.snowflakePrivateLinkConfig != undefined) {
+        const snowflakeInterfaceEndpoint = vpc.addInterfaceEndpoint("SnowflakeVpce", {
+          subnets: selectedSubnets,
+          securityGroups: securityGroups,
+          service: {
+            name: props.snowflakePrivateLinkConfig.vpceId,
+            port: 443,
+          },
+          privateDnsEnabled: false,
+        });
+        const snowflakePrivateHostedZone = new PrivateHostedZone(this, "PrivateLinkHostedZone", {
+          zoneName: "privatelink.snowflakecomputing.com",
+          vpc: vpc,
+        });
 
-      const snowflakePrivateHostedZone = new PrivateHostedZone(this, "PrivateLinkHostedZone", {
-        zoneName: "privatelink.snowflakecomputing.com",
-        vpc: vpc,
-      });
-
-      new CnameRecord(this, "PrivateLinkRecord", {
-        recordName: "*",
-        zone: snowflakePrivateHostedZone,
-        domainName: Fn.select(1, Fn.split(":", Fn.select(0, snowflakeInterfaceEndpoint.vpcEndpointDnsEntries))),
-        ttl: Duration.seconds(60),
-      });
+        new CnameRecord(this, "PrivateLinkRecord", {
+          recordName: "*",
+          zone: snowflakePrivateHostedZone,
+          domainName: Fn.select(1, Fn.split(":", Fn.select(0, snowflakeInterfaceEndpoint.vpcEndpointDnsEntries))),
+          ttl: Duration.seconds(60),
+        });
+      }
     }
     const passwordParameter = new AwsCustomResource(this, "SnowflakeAuthenticationParameter", {
       onCreate: {
@@ -192,6 +198,7 @@ export class TextToSqlWithLambdaAndSnowflakeStack extends Stack {
       vpc: vpc,
       securityGroups: securityGroups,
       selectedSubnets: selectedSubnets,
+      usePrivateLink: props.snowflakePrivateLinkConfig != undefined,
     });
     lambdas.node.addDependency(passwordParameter);
     this.cdkNagSuppressions();

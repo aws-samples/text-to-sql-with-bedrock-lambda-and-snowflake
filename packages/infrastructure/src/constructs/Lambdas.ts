@@ -40,6 +40,7 @@ export interface LambdasConfig {
   vpc?: IVpc;
   securityGroups?: SecurityGroup[];
   selectedSubnets?: SelectedSubnets;
+  usePrivateLink: boolean;
 }
 
 export interface SnowflakePrivateLinkLambdaConfig {}
@@ -70,7 +71,7 @@ export class Lambdas extends Construct implements IDependable {
       code: Code.fromAsset(path.join(__dirname, "..", "..", "dist", "TextToSql.zip")),
       environment: {
         LOG_LEVEL: "DEBUG",
-        SNOWFLAKE_ACCOUNT: config.vpc != undefined ? `${config.snowflakeConnection.snowflakeAccountId}.privatelink` : config.snowflakeConnection.snowflakeAccountId,
+        SNOWFLAKE_ACCOUNT: config.usePrivateLink ? `${config.snowflakeConnection.snowflakeAccountId}.privatelink` : config.snowflakeConnection.snowflakeAccountId,
         SNOWFLAKE_DATABASE: config.snowflakeConnection.snowflakeDb,
         SNOWFLAKE_WAREHOUSE: config.snowflakeConnection.snowflakeWarehouse,
         SNOWFLAKE_AUTHENTICATION: JSON.stringify(config.snowflakeAuthentication),
@@ -128,7 +129,7 @@ export class Lambdas extends Construct implements IDependable {
       code: Code.fromAsset(path.join(__dirname, "..", "..", "dist", "IndexTables.zip")),
       environment: {
         LOG_LEVEL: "DEBUG",
-        SNOWFLAKE_ACCOUNT: config.vpc != undefined ? `${config.snowflakeConnection.snowflakeAccountId}.privatelink` : config.snowflakeConnection.snowflakeAccountId,
+        SNOWFLAKE_ACCOUNT: config.usePrivateLink ? `${config.snowflakeConnection.snowflakeAccountId}.privatelink` : config.snowflakeConnection.snowflakeAccountId,
         SNOWFLAKE_DATABASE: config.snowflakeConnection.snowflakeDb,
         SNOWFLAKE_WAREHOUSE: config.snowflakeConnection.snowflakeWarehouse,
         SNOWFLAKE_AUTHENTICATION: JSON.stringify(config.snowflakeAuthentication),

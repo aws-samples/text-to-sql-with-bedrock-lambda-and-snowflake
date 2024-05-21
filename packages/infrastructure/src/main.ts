@@ -20,6 +20,7 @@ import { App, Aspects } from "aws-cdk-lib";
 import { TextToSqlWithLambdaAndSnowflakeStack } from "./stacks";
 import { AwsSolutionsChecks } from "cdk-nag";
 import { UsernameAndPasswordAuthentication } from "./runtime/utils";
+import { SubnetType } from "aws-cdk-lib/aws-ec2";
 
 const app = new App();
 
@@ -44,8 +45,11 @@ new TextToSqlWithLambdaAndSnowflakeStack(app, "text-to-sql-with-lambda-and-snowf
   snowflakeRole: "SYSADMIN",
   snowflakeSchema: "PUBLIC",
   snowflakeWarehouse: "TEST_WH",
-  snowflakePrivateLinkConfig: {
-    vpceId: "com.amazonaws.vpce.us-east-1.vpce-svc-0ddfafc93f4619001",
+  vpcConfig: {
+    vpcId: "vpc-0a48c23d6da73b3f4",
+    subnets: {
+      subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+    },
   },
 });
 Aspects.of(app).add(new AwsSolutionsChecks());

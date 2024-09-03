@@ -33,15 +33,15 @@ new TextToSqlWithLambdaAndSnowflakeStack(app, "text-to-sql-with-lambda-and-snowf
   },
   snowflakeAccountId: "otzhjhy-glb64226",
   snowflakeDb: "IMDB",
-  // snowflakeAuthentication: new KeyPairAuthentication("84646402-7404-4831-9a71-a4b44dbcecdd", "/text-to-sql-with-lambda-and-snowflake/password"),
+  // snowflakeAuthentication: new KeyPairAuthentication("84646402-7404-4831-9a71-a4b44dbcecdd", "text-to-sql-with-lambda-and-snowflake/password"),
   // snowflakeAuthentication: new OAuthClientCredentialsAuthentication(
   //   "84646402-7404-4831-9a71-a4b44dbcecdd",
-  //   "/text-to-sql-with-lambda-and-snowflake/client-credentials",
+  //   "text-to-sql-with-lambda-and-snowflake/client-credentials",
   //   "https://login.microsoftonline.com/4b35c00f-2bc0-4f69-b529-56debf3e163d/oauth2/v2.0/token",
   //   "99291312-a9a0-4ab7-b156-5b3e538f8c2d",
   //   "https://otzhjhy-glb64226.snowflakecomputing.com/.default",
   // ),
-  snowflakeAuthentication: new UsernameAndPasswordAuthentication("84646402-7404-4831-9a71-a4b44dbcecdd", "/text-to-sql-with-lambda-and-snowflake/password"),
+  snowflakeAuthentication: new UsernameAndPasswordAuthentication("84646402-7404-4831-9a71-a4b44dbcecdd", "text-to-sql-with-lambda-and-snowflake/password"),
   snowflakeRole: "SYSADMIN",
   snowflakeSchema: "PUBLIC",
   snowflakeWarehouse: "TEST_WH",
@@ -49,7 +49,7 @@ new TextToSqlWithLambdaAndSnowflakeStack(app, "text-to-sql-with-lambda-and-snowf
     vpcId: "vpc-0a48c23d6da73b3f4",
     subnets: {
       subnetType: SubnetType.PRIVATE_WITH_EGRESS,
-      onePerAz:true,
+      onePerAz: true,
     },
   },
 });

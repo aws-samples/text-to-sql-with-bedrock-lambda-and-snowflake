@@ -16,6 +16,7 @@
  */
 
 import { BedrockRuntimeClient, InvokeModelCommand, InvokeModelCommandInput, InvokeModelCommandOutput } from "@aws-sdk/client-bedrock-runtime";
+import { GetSecretValueCommand, GetSecretValueCommandInput, GetSecretValueCommandOutput, SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
 import { GetParameterCommand, GetParameterCommandInput, GetParameterCommandOutput, SSMClient } from "@aws-sdk/client-ssm";
 import { Powertools } from "./Powertools";
 
@@ -29,6 +30,7 @@ export interface AwsApiCalls {
   bedrockRuntimeClient: BedrockRuntimeClient;
   invokeModel(input: InvokeModelCommandInput): Promise<InvokeModelCommandOutput>;
   getParameter(input: GetParameterCommandInput): Promise<GetParameterCommandOutput>;
+  getSecretValue(input: GetSecretValueCommandInput): Promise<GetSecretValueCommandOutput>;
 }
 
 export class Aws implements AwsApiCalls {
@@ -48,6 +50,7 @@ export class Aws implements AwsApiCalls {
 
   private _bedrockRuntimeClient?: BedrockRuntimeClient;
   private _ssmClient?: SSMClient;
+  private _secretsManagerClient?: SecretsManagerClient;
 
   private constructor(config: { [key: string]: any | undefined } = {}, powertools: Powertools | undefined) {
     this.config = config;
@@ -88,11 +91,30 @@ export class Aws implements AwsApiCalls {
     return this._ssmClient;
   }
 
+  private get secretsManagerClient(): SecretsManagerClient {
+    if (this._secretsManagerClient == undefined) {
+      this._secretsManagerClient = this._powertools
+        ? this._powertools.tracer.captureAWSv3Client(
+            new SecretsManagerClient({
+              ...this.config,
+              retryMode: "adaptive",
+              logger: this._powertools.logger,
+            }),
+          )
+        : new SecretsManagerClient(this.config);
+    }
+    return this._secretsManagerClient;
+  }
+
   async invokeModel(input: InvokeModelCommandInput): Promise<InvokeModelCommandOutput> {
     return this.bedrockRuntimeClient.send(new InvokeModelCommand(input));
   }
 
   async getParameter(input: GetParameterCommandInput): Promise<GetParameterCommandOutput> {
     return this.ssmClient.send(new GetParameterCommand(input));
+  }
+
+  async getSecretValue(input: GetSecretValueCommandInput): Promise<GetSecretValueCommandOutput> {
+    return this.secretsManagerClient.send(new GetSecretValueCommand(input));
   }
 }

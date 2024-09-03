@@ -48,7 +48,87 @@ export const onEventHandler: LambdaHandler<Record<string, any>, Record<string, a
         return value.pageContent;
       })
       .join(" ");
-    const prompt = `It is important that the SQL query complies with ANSI sql syntax. During join if column name are same please use alias ex llm.TCONST in select statement. It is also important to respect the type of columns: if a column is string, the value should be enclosed in quotes. If you are writing CTEs then include all the required columns. Be sure to use the database, schema, and table name seperated by '.'. When searching for string values, don't apply case sensitivity. If exact match is not found, try wild card search. Please print the resulting SQL query in a sql code markdown block. The following json document represents the metadata for the tables in the database: ${pageContents}. Generate SQL answer the following question '${humanQuery}'`;
+    const prompt = `Your task is to generate a SNOWFLAKE SQL query based on a given natural language query and the provided database metadata. 
+
+      You are a SNOWFLAKE SQL generator agent. Your job is to transform the natural language query inside the QUESTION tags into SNOWFLAKE compliant SQL using the database metadata found inside the METADATA tags.
+      
+      Please follow these guidelines:
+      
+      1. During join operations, if column names are the same, use alias notation such as 'llm.TCONST' in the statement.
+      2. Respect the data type of columns: if a column is a string, enclose the value in quotes.
+      3. If you are writing CTEs, include all the required columns.
+      4. Use the database, schema, and table names separated by '.'.
+      5. If you need to compare string values, do so in a case-insensitive manner, like "WHERE LOWER(t.GENRES) LIKE '%action%'".
+      6. Print the resulting SQL query in a SQL code markdown block.
+      7. Ensure that all generated SQL queries are read-only and will never mutate data (no INSERT, UPDATE, DELETE, DROP, etc.).
+      
+      Example:
+      <METADATA>
+     {
+        "database": "IMDB",
+        "table": "TITLES",
+        "schema": "PUBLIC",
+        "comment": "Contains basic movie title information",
+        "columns": [
+            [
+                {
+                    "name": "TCONST",
+                    "comment": "alphanumeric unique identifier of the title"
+                },
+                {
+                    "name": "TITLETYPE",
+                    "comment": "the type/format of the title (e.g. movie, short, tvseries, tvepisode, video, etc)"
+                },
+                {
+                    "name": "PRIMARYTITLE",
+                    "comment": "the more popular title / the title used by the filmmakers on promotional materials at the point of release"
+                },
+                {
+                    "name": "ORIGINALTITLE",
+                    "comment": "original title, in the original language"
+                },
+                {
+                    "name": "ISADULT",
+                    "comment": "0: non-adult title; 1: adult title"
+                },
+                {
+                    "name": "STARTYEAR",
+                    "comment": "represents the release year of a title. In the case of TV Series, it is the series start year"
+                },
+                {
+                    "name": "ENDYEAR",
+                    "comment": "TV Series end year. ‘N’ for all other title types"
+                },
+                {
+                    "name": "RUNTIMEMINUTES",
+                    "comment": "primary runtime of the title, in minutes"
+                },
+                {
+                    "name": "GENRES",
+                    "comment": "includes up to three genres associated with the title"
+                }
+            ]
+        ]
+    }
+      </METADATA>
+      <QUESTION>
+      Find the titles with genres containing 'action'
+      </QUESTION>
+      
+      \`\`\`sql
+          SELECT t.*
+          FROM IMDB.PUBLIC.TITLES t
+          WHERE LOWER(t.GENRES) LIKE '%action%';
+      \`\`\`
+      
+      If the natural language query is ambiguous or you need additional information to generate the SQL query accurately, feel free to ask for clarification.
+      
+      <METADATA>
+      ${pageContents}
+      </METADATA>
+      <QUESTION>
+      ${humanQuery}
+      </QUESTION>`;
     const body = {
       anthropic_version: "bedrock-2023-05-31",
       max_tokens: 3000,

@@ -124,6 +124,7 @@ const main = async () => {
 			"@langchain/core",
 			"langchain",
 			"@aws-sdk/client-ssm",
+			"@aws-sdk/client-secrets-manager",
 			"@aws-sdk/client-bedrock-runtime",
 			"snowflake-sdk",
 			"@aws-lambda-powertools/logger",

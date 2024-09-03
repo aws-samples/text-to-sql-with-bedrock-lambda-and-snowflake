@@ -15,13 +15,12 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { Aws, Duration, Fn, RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
+import { Duration, Fn, RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
 import { SnowflakeConnection } from "./index";
 import { Construct } from "constructs";
 import { Layers } from "../constructs/Layers";
 import { Lambdas } from "../constructs/Lambdas";
-import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from "aws-cdk-lib/custom-resources";
-import { ParameterDataType } from "aws-cdk-lib/aws-ssm";
+import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { OpenSearchServerlessVectorStore } from "../constructs/OpenSearchServerlessVectorStore";
 import { NagSuppressions } from "cdk-nag";
 import { SnowflakeAuthentication } from "../runtime/utils";
@@ -156,29 +155,21 @@ export class TextToSqlWithLambdaAndSnowflakeStack extends Stack {
         });
       }
     }
-    const passwordParameter = new AwsCustomResource(this, "SnowflakeAuthenticationParameter", {
-      onCreate: {
-        service: "SSM",
-        action: "PutParameter",
-        physicalResourceId: PhysicalResourceId.of(props.snowflakeAuthentication.parameterName),
-        parameters: {
-          Type: "SecureString",
-          Value: "Replace me after deployment via the console",
-          DataType: ParameterDataType.TEXT,
-          Name: props.snowflakeAuthentication.parameterName,
-        },
+
+    const secretStringTemplate: { [key: string]: string } = {};
+    const keyName = props.snowflakeAuthentication.parameterName.split("/")[1] as string;
+    secretStringTemplate[keyName] = "";
+
+    const secret = new Secret(this, "SnowflakeAuthenticationSecret", {
+      secretName: props.snowflakeAuthentication.parameterName.split("/")[0],
+      description: "Snowflake authentication secret",
+      generateSecretString: {
+        secretStringTemplate: JSON.stringify(secretStringTemplate),
+        generateStringKey: keyName,
+        excludeCharacters: '/@"',
       },
-      onDelete: {
-        service: "SSM",
-        action: "DeleteParameter",
-        parameters: {
-          Name: props.snowflakeAuthentication.parameterName,
-        },
-      },
-      policy: AwsCustomResourcePolicy.fromSdkCalls({
-        resources: [`arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${props.snowflakeAuthentication.parameterName}`],
-      }),
     });
+
     const vectorStore = new OpenSearchServerlessVectorStore(this, "VectorStore", {
       name: props.aossCollectionName,
       description: "Knowledge base in text-to-sql RAG framework",
@@ -199,8 +190,9 @@ export class TextToSqlWithLambdaAndSnowflakeStack extends Stack {
       securityGroups: securityGroups,
       selectedSubnets: selectedSubnets,
       usePrivateLink: props.snowflakePrivateLinkConfig != undefined,
+      secret: secret,
     });
-    lambdas.node.addDependency(passwordParameter);
+    lambdas.node.addDependency(secret);
     this.cdkNagSuppressions();
   }
 
@@ -227,6 +219,12 @@ export class TextToSqlWithLambdaAndSnowflakeStack extends Stack {
       {
         id: "AwsSolutions-IAM5",
         reason: "Wildcard permissions for anthropic models allowed here",
+      },
+    ]);
+    NagSuppressions.addResourceSuppressionsByPath(this, `/${this.stackName}/SnowflakeAuthenticationSecret/Resource`, [
+      {
+        id: "AwsSolutions-SMG4",
+        reason: "Secret value is managed on the snowflake side so we do not want to auto-rotate",
       },
     ]);
   }

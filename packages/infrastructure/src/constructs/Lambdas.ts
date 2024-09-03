@@ -30,6 +30,7 @@ import { OpenSearchServerlessVectorStore } from "./OpenSearchServerlessVectorSto
 
 import { SnowflakeAuthentication } from "../runtime/utils";
 import { IVpc, SecurityGroup, SelectedSubnets } from "aws-cdk-lib/aws-ec2";
+import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 
 export interface LambdasConfig {
   layers: Layers;
@@ -41,6 +42,7 @@ export interface LambdasConfig {
   securityGroups?: SecurityGroup[];
   selectedSubnets?: SelectedSubnets;
   usePrivateLink: boolean;
+  secret: Secret;
 }
 
 export interface SnowflakePrivateLinkLambdaConfig {}
@@ -93,11 +95,6 @@ export class Lambdas extends Construct implements IDependable {
       securityGroups: config.securityGroups,
       tracing: Tracing.ACTIVE,
       initialPolicy: [
-        new PolicyStatement({
-          actions: ["ssm:GetParameter"],
-          effect: Effect.ALLOW,
-          resources: [`arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${config.snowflakeAuthentication.parameterName}`],
-        }),
         new PolicyStatement({
           effect: Effect.ALLOW,
           actions: ["bedrock:InvokeModel"],
@@ -152,11 +149,6 @@ export class Lambdas extends Construct implements IDependable {
       securityGroups: config.securityGroups,
       initialPolicy: [
         new PolicyStatement({
-          actions: ["ssm:GetParameter"],
-          effect: Effect.ALLOW,
-          resources: [`arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${config.snowflakeAuthentication.parameterName}`],
-        }),
-        new PolicyStatement({
           effect: Effect.ALLOW,
           actions: ["bedrock:InvokeModel"],
           resources: [
@@ -178,5 +170,7 @@ export class Lambdas extends Construct implements IDependable {
     });
     config.vectorStore.grantFullDataAccess("index-table-function", this.indexTables.role!);
     config.vectorStore.grantFullDataAccess("text-to-sql-function", this.textToSql.role!);
+    config.secret.grantRead(this.indexTables);
+    config.secret.grantRead(this.textToSql);
   }
 }

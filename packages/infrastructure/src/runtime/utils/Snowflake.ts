@@ -20,6 +20,8 @@ import { configure, Connection, ConnectionOptions, createConnection } from "snow
 import { AwsApiCalls } from "./Aws";
 import { Powertools } from "./Powertools";
 
+const VALID_PARAMETER_REGEX = /^[\w_-]*\/[\w_-]*$/;
+
 export interface SnowflakeApiCalls {
   execute(sql: string): Promise<any[] | undefined>;
 }
@@ -42,6 +44,10 @@ export abstract class AbstractSnowflakeAuthentication implements SnowflakeAuthen
 
   constructor(username: string, parameterName: string) {
     this.username = username;
+    //validate that the parameter name adheres to VALID_PARAMTER_REGEX
+    if (!VALID_PARAMETER_REGEX.test(parameterName)) {
+      throw new Error(`Invalid parameter name: ${parameterName}. Parameter name must match the pattern: ${VALID_PARAMETER_REGEX}`);
+    }
     this.parameterName = parameterName;
   }
 
@@ -132,9 +138,11 @@ export class Snowflake implements SnowflakeApiCalls {
   private async connection(): Promise<Connection> {
     if (this._connection == undefined || !(await this._connection.isValidAsync())) {
       let options: ConnectionOptions;
+      const parameterName: string = this.config.authentication.parameterName.split("/")[0];
+      const parameterKey: string = this.config.authentication.parameterName.split("/")[1];
       switch (this.config.authentication.type) {
         case SnowflakeAuthenticationTypes.KeyPair:
-          const privateKeyPem = await this.getParameter(this._aws!, this.config.authentication.parameterName);
+          const privateKeyPem = await this.getParameter(this._aws!, parameterName, parameterKey);
 
           options = {
             account: this.config.account,
@@ -148,7 +156,7 @@ export class Snowflake implements SnowflakeApiCalls {
           };
           break;
         case SnowflakeAuthenticationTypes.UsernameAndPassword:
-          const password = await this.getParameter(this._aws!, this.config.authentication.parameterName);
+          const password = await this.getParameter(this._aws!, parameterName, parameterKey);
           options = {
             account: this.config.account,
             application: this.config.application,
@@ -163,7 +171,7 @@ export class Snowflake implements SnowflakeApiCalls {
         case SnowflakeAuthenticationTypes.OAuthClientCredentials:
           const oauth = this.config.authentication as OAuthClientCredentialsAuthentication;
           const clientId = oauth.clientId;
-          const clientSecret = await this.getParameter(this._aws!, oauth.parameterName);
+          const clientSecret = await this.getParameter(this._aws!, parameterName, parameterKey);
           const auth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
           const tokenUrl = oauth.tokenUrl;
           const body = encodeURI(`${encodeURI("grant_type")}=${encodeURI("client_credentials")}&${encodeURI("scope")}=${encodeURI(oauth.scope)}`);
@@ -229,12 +237,15 @@ export class Snowflake implements SnowflakeApiCalls {
     return this._connection;
   }
 
-  async getParameter(aws: AwsApiCalls, parameterName: string): Promise<string> {
-    const response = await aws.getParameter({
-      Name: parameterName,
-      WithDecryption: true,
+  async getParameter(aws: AwsApiCalls, parameterName: string, parameterKey: string): Promise<string> {
+    const response = await aws.getSecretValue({
+      SecretId: parameterName,
     });
-    return response.Parameter?.Value!;
+    if (response.SecretString) {
+      return JSON.parse(response.SecretString)[parameterKey];
+    } else {
+      throw new Error("Missing SecretString");
+    }
   }
 
   async execute(sql: string): Promise<any[] | undefined> {

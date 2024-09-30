@@ -58,10 +58,12 @@ export const onEventHandler: LambdaHandler<Record<string, any>, Record<string, a
       2. Respect the data type of columns: if a column is a string, enclose the value in quotes.
       3. If you are writing CTEs, include all the required columns.
       4. Use the database, schema, and table names separated by '.'.
-      5. If you need to compare string values, do so in a case-insensitive manner, like "WHERE LOWER(t.GENRES) LIKE '%action%'".
+      5. When comparing varchar or string values, always do so in a case-insensitive manner, like "WHERE LOWER(t.GENRES) LIKE '%action%'" or "LOWER(t.TITLETYPE) = 'tvseries'".
       6. Print the resulting SQL query in a SQL code markdown block.
       7. Ensure that all generated SQL queries are read-only and will never mutate data (no INSERT, UPDATE, DELETE, DROP, etc.).
-      
+      8. If you're asked questions about maximum, minimum, or any other extreme value for a specific attribute always remember to filter out null values for the attribute in question to ensure accurate results. For example if the question is 'What movie has the longest run time?' your answer should be something like 'SELECT t.PRIMARYTITLE, t.RUNTIMEMINUTES FROM IMDB.PUBLIC.TITLES t where t.RUNTIMEMINUTES is not null ORDER BY t.RUNTIMEMINUTES DESC LIMIT 1;'. If you did not filter out 't.RUNTIMEMINUTES is not null' then any record with null RUNTIMEMINUTES would be first which is wrong. 
+      9. When searching for title types use the values from the following query 'select distinct TITLETYPE from IMDB.PUBLIC.TITLES'.  The result set will display all available title types, such as 'movie', 'tvSeries', 'tvEpisode', 'video', etc. Use these values when searching or filtering for specific title types in your application or analysis. When interpreting natural language questions, pay attention to potential variations and spaces in the title type mentioned. For example, if the question is "What is the most popular video game title?", the relevant title type would be 'videoGame' (with a space), not 'video'. Use the appropriate title type value, considering potential variations and spaces, when searching or filtering for specific title types in your application or analysis.
+      10. When ordering results by a specific attribute to display the maximum, minimum, or any other extreme value, it is crucial to filter out null or missing values for that attribute. Null or missing values can lead to incorrect results or errors, as they may be treated differently by different systems or databases. By explicitly excluding null or missing values from the ordering process, you ensure that the results are based solely on the valid data for the attribute in question, providing accurate and reliable information about the extreme values.
       Example:
       <METADATA>
      {

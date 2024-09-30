@@ -258,13 +258,13 @@
           "cwd": "/Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/packages/infrastructure"
         },
         {
-          "exec": "esbuild src/runtime/handlers/TextToSql.ts --platform=node  --bundle  --external:@aws-lambda-powertools/logger --external:@aws-lambda-powertools/metrics --external:@aws-lambda-powertools/tracer --external:@aws-sdk/client-bedrock-runtime --external:@aws-sdk/client-glue --external:@aws-sdk/client-ssm --external:@aws-sdk/credential-provider-node --external:@smithy/types --external:@types/aws-lambda --external:constructs  --outfile=lib/runtime/esbuild/TextToSql/index.js"
+          "exec": "esbuild src/runtime/handlers/TextToSql.ts --platform=node  --bundle  --external:@aws-lambda-powertools/logger --external:@aws-lambda-powertools/metrics --external:@aws-lambda-powertools/tracer --external:@aws-sdk/client-bedrock-runtime --external:@aws-sdk/client-glue --external:@aws-sdk/client-secrets-manager --external:@aws-sdk/client-ssm --external:@aws-sdk/credential-provider-node --external:@smithy/types --external:@types/aws-lambda --external:constructs  --outfile=lib/runtime/esbuild/TextToSql/index.js"
         },
         {
           "exec": "zip -j -r ./dist/TextToSql.zip lib/runtime/esbuild/TextToSql/index.js"
         },
         {
-          "exec": "esbuild src/runtime/handlers/IndexTables.ts --platform=node  --bundle  --external:@aws-lambda-powertools/logger --external:@aws-lambda-powertools/metrics --external:@aws-lambda-powertools/tracer --external:@aws-sdk/client-bedrock-runtime --external:@aws-sdk/client-glue --external:@aws-sdk/client-ssm --external:@aws-sdk/credential-provider-node --external:@smithy/types --external:@types/aws-lambda --external:constructs  --outfile=lib/runtime/esbuild/IndexTables/index.js"
+          "exec": "esbuild src/runtime/handlers/IndexTables.ts --platform=node  --bundle  --external:@aws-lambda-powertools/logger --external:@aws-lambda-powertools/metrics --external:@aws-lambda-powertools/tracer --external:@aws-sdk/client-bedrock-runtime --external:@aws-sdk/client-glue --external:@aws-sdk/client-secrets-manager --external:@aws-sdk/client-ssm --external:@aws-sdk/credential-provider-node --external:@smithy/types --external:@types/aws-lambda --external:constructs  --outfile=lib/runtime/esbuild/IndexTables/index.js"
         },
         {
           "exec": "zip -j -r ./dist/IndexTables.zip lib/runtime/esbuild/IndexTables/index.js"

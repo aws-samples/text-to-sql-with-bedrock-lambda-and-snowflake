@@ -38,6 +38,7 @@ appsec
 cdk.context.json
 metadata.json
 key-pair
+.nx
 !/.github/pull_request_template.md
 !/.npmrc
 !/test/

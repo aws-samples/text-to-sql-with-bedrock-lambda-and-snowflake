@@ -26,9 +26,9 @@ export class Nx extends Component {
 
 		// Add nx library dependencies
 		rootProject.addDevDeps(
-			'nx@^15',
-			'@nrwl/devkit@^15',
-			'@nrwl/workspace@^15'
+			'nx@^19',
+			'@nrwl/devkit@^19',
+			'@nrwl/workspace@^19'
 		);
 
 		// Add nx.json file
@@ -37,14 +37,14 @@ export class Nx extends Component {
 				extends: 'nx/presets/npm.json',
 				tasksRunnerOptions: {
 					default: {
-						runner: '@nrwl/workspace/tasks-runners/default',
+						runner: 'nx/tasks-runners/default',
 						options: {
 
 							// By default nx uses a local cache to prevent re-running targets
 
 							// that have not had their inputs changed (eg. no changes to source files).
 							// The following specifies what targets are cacheable.
-							cacheableOperations: ['build']
+							cacheableOperations: ['build',"eslint","test"]
 						},
 					},
 				},

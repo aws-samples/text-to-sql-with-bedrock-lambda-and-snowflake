@@ -59,7 +59,7 @@ const main = async () => {
 			},
 			include: ["projen/**/*.ts"]
 		},
-		gitignore: [".DS_Store", ".idea", "*.iml", ".$*", "appsec", 'cdk.context.json', 'metadata.json','key-pair'],
+		gitignore: [".DS_Store", ".idea", "*.iml", ".$*", "appsec", 'cdk.context.json', 'metadata.json','key-pair','.nx'],
 		// Jest and eslint are disabled at the root as they will be
 		// configured by each subproject. Using a single jest/eslint
 		// config at the root is out of scope for this walkthrough
@@ -145,7 +145,8 @@ const main = async () => {
 			"sinon",
 			"@types/sinon",
 			"vitest"
-		]
+		],
+
 	});
 	new PrettierRc(root);
 	new PnpmWorkspace(root);

@@ -6,12 +6,12 @@
     },
     {
       "name": "@nrwl/devkit",
-      "version": "^15",
+      "version": "^19",
       "type": "build"
     },
     {
       "name": "@nrwl/workspace",
-      "version": "^15",
+      "version": "^19",
       "type": "build"
     },
     {
@@ -34,7 +34,7 @@
     },
     {
       "name": "nx",
-      "version": "^15",
+      "version": "^19",
       "type": "build"
     },
     {

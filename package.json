@@ -22,17 +22,17 @@
   },
   "devDependencies": {
     "@npmcli/arborist": "^7.5.4",
-    "@nrwl/devkit": "^15",
-    "@nrwl/workspace": "^15",
+    "@nrwl/devkit": "^19",
+    "@nrwl/workspace": "^19",
     "@types/node": "^20",
     "@types/npm-packlist": "^7.0.3",
     "@types/npmcli__arborist": "^5.6.11",
     "constructs": "^10.0.0",
-    "nx": "^15",
+    "nx": "^19",
     "prettier": "^3.3.3",
-    "projen": "^0.88.0",
+    "projen": "^0.88.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.3"
   },
   "pnpm": {},
   "engines": {

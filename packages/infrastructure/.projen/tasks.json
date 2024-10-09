@@ -216,6 +216,12 @@
           "exec": "cp -R /Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/packages/infrastructure/node_modules/@langchain/community/* /tmp/infrastructure/nodejs/node_modules/@langchain/community"
         },
         {
+          "exec": "mkdir -p /tmp/infrastructure/nodejs/node_modules/langchain"
+        },
+        {
+          "exec": "cp -R /Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/packages/infrastructure/node_modules/langchain/* /tmp/infrastructure/nodejs/node_modules/langchain"
+        },
+        {
           "exec": "mkdir -p /tmp/infrastructure/nodejs/node_modules/@langchain/core"
         },
         {
@@ -232,12 +238,6 @@
         },
         {
           "exec": "cp -R /Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/packages/infrastructure/node_modules/@opensearch-project/opensearch/* /tmp/infrastructure/nodejs/node_modules/@opensearch-project/opensearch"
-        },
-        {
-          "exec": "mkdir -p /tmp/infrastructure/nodejs/node_modules/langchain"
-        },
-        {
-          "exec": "cp -R /Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/packages/infrastructure/node_modules/langchain/* /tmp/infrastructure/nodejs/node_modules/langchain"
         },
         {
           "exec": "mkdir -p /tmp/infrastructure/nodejs/node_modules/snowflake-sdk"

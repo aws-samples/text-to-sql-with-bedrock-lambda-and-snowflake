@@ -144,7 +144,7 @@ const main = async () => {
 			"cdk-nag",
 			"sinon",
 			"@types/sinon",
-			"vitest"
+			"vitest@^4.0.0"
 		],
 
 	});

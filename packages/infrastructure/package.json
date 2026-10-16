@@ -61,7 +61,7 @@
     "aws-cdk-lib": "^2.161.1",
     "constructs": "^10.0.5",
     "langchain": "^0.3.2",
-    "snowflake-sdk": "^1.14.0"
+    "snowflake-sdk": "^3.3.0"
   },
   "engines": {
     "node": ">= 20.11.1"

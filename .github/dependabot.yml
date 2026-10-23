@@ -1,0 +1,31 @@
+# Dependabot configuration.
+#
+# Security updates are enabled in the repository settings. This file exists so
+# their PR titles follow Conventional Commits ("fix(deps): ..." / "chore(deps): ...")
+# and pass the pull-request-lint workflow (amannn/action-semantic-pull-request,
+# allowed types: feat, fix, chore).
+#
+# open-pull-requests-limit: 0 keeps routine version-update PRs off; security
+# update PRs are not affected by this limit.
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directories:
+      - "/"
+      - "/packages/infrastructure"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 0
+    commit-message:
+      prefix: "fix"
+      prefix-development: "chore"
+      include: "scope"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 0
+    commit-message:
+      prefix: "chore"
+      include: "scope"

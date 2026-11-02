@@ -36,7 +36,6 @@
   },
   "pnpm": {
     "overrides": {
-      "@langchain/core@<0.4": "0.3.80",
       "@tootallnate/once@2": "2.0.1",
       "ajv@6": "6.15.0",
       "axios": "1.20.0",
@@ -51,7 +50,7 @@
       "diff@5": "5.2.2",
       "esbuild@<0.25.0": "0.25.12",
       "expr-eval": "npm:expr-eval-fork@^3.0.3",
-      "fast-xml-parser@>=4.0.0 <5": "4.5.5",
+      "fast-xml-parser@<5.7.0": "5.11.2",
       "flatted": "3.4.2",
       "follow-redirects@1": "1.16.2",
       "form-data@2": "2.5.6",
@@ -62,8 +61,6 @@
       "js-yaml@>=4.0.0 <5": "4.3.2",
       "jws@3": "3.2.3",
       "jws@>=4.0.0 <5": "4.0.1",
-      "langchain@>=0.3.0 <0.4": "0.3.37",
-      "langsmith@>=0.1.0 <0.6": "0.6.0",
       "micromatch@4": "4.0.8",
       "minimatch@3": "3.1.5",
       "minimatch@5": "5.1.9",
@@ -81,8 +78,10 @@
       "tar@>=6.0.0 <8": "7.5.22",
       "tmp": "0.2.7",
       "toml": ">=5.0.1",
+      "uuid@<11.1.1": "11.1.1",
       "vite": "6.4.5",
-      "yaml@2": "2.9.1"
+      "yaml@2": "2.9.1",
+      "zod@<4.6.6": "4.6.7"
     }
   },
   "engines": {

@@ -16,7 +16,7 @@
  */
 
 import { defaultProvider } from "@aws-sdk/credential-provider-node";
-import { BedrockEmbeddings } from "@langchain/community/embeddings/bedrock";
+import { BedrockEmbeddings } from "@langchain/aws";
 import { OpenSearchVectorStore } from "@langchain/community/vectorstores/opensearch";
 import { Document } from "@langchain/core/documents";
 import { Client, RequestParams } from "@opensearch-project/opensearch";

@@ -108,6 +108,43 @@ export class NovaEmbeddings extends Embeddings {
   }
 }
 
+export interface WaitUntilSearchableOptions {
+  /** Maximum time to wait. @default 120000 */
+  timeoutMs?: number;
+  /** Time between searches. @default 10000 */
+  intervalMs?: number;
+  /** Injected for tests. */
+  sleep?: (ms: number) => Promise<void>;
+  /** Injected for tests. */
+  now?: () => number;
+}
+
+/**
+ * Polls with a similarity search until it returns at least one document, or the timeout passes.
+ *
+ * OpenSearch Serverless makes newly written documents searchable about a minute after they are indexed,
+ * so a question asked right after indexing finds no table metadata. Each poll makes one embeddings call.
+ *
+ * @returns true if the search returned a document before the timeout, false otherwise
+ */
+export async function waitUntilSearchable(aoss: OpenSearchApiCalls, probeQuery: string, options: WaitUntilSearchableOptions = {}): Promise<boolean> {
+  const timeoutMs = options.timeoutMs ?? 120_000;
+  const intervalMs = options.intervalMs ?? 10_000;
+  const sleep = options.sleep ?? ((ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms)));
+  const now = options.now ?? Date.now;
+  const deadline = now() + timeoutMs;
+  for (;;) {
+    const results = await aoss.similaritySearch(probeQuery, 1);
+    if (results.length > 0) {
+      return true;
+    }
+    if (now() + intervalMs > deadline) {
+      return false;
+    }
+    await sleep(intervalMs);
+  }
+}
+
 export class OpenSearch implements OpenSearchApiCalls {
   static instance(config: OpenSearchConfig, aws: AwsApiCalls, powertools: Powertools | undefined) {
     if (this._instance == undefined) {

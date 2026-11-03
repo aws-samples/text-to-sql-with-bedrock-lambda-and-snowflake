@@ -148,6 +148,8 @@ const main = async () => {
 		],
 
 	});
+	// Unit tests (vitest). The test task already runs eslint.
+	infrastructure.testTask.exec("vitest run");
 	new PrettierRc(root);
 	new PnpmWorkspace(root);
 	new Nx(root); // add nx to root
@@ -232,7 +234,7 @@ const main = async () => {
 				cwd: `${root.outdir}/key-pair`
 			},
 			{
-				say: "Store this value in your SSM Parameter",
+				say: "Store this private key in the stack's Secrets Manager secret (see the README)",
 				exec: "cat snowflake.p8",
 				cwd: `${root.outdir}/key-pair`
 			},

@@ -103,6 +103,9 @@ export class Lambdas extends Construct implements IDependable {
         return messages;
       },
     });
+    // Only set SNOWFLAKE_ROLE when a role is configured, so an unset role falls back to the user's default role.
+    const snowflakeRoleEnvironment: Record<string, string> =
+      config.snowflakeConnection.snowflakeRole != undefined ? { SNOWFLAKE_ROLE: config.snowflakeConnection.snowflakeRole } : {};
     const textToSqlFunctionLogGroup = new LogGroup(this, "TextToSqlFunctionLogGroup", {
       retention: RetentionDays.ONE_WEEK,
       removalPolicy: RemovalPolicy.DESTROY,
@@ -119,6 +122,7 @@ export class Lambdas extends Construct implements IDependable {
         SNOWFLAKE_WAREHOUSE: config.snowflakeConnection.snowflakeWarehouse,
         SNOWFLAKE_AUTHENTICATION: JSON.stringify(config.snowflakeAuthentication),
         SNOWFLAKE_SCHEMA: config.snowflakeConnection.snowflakeSchema,
+        ...snowflakeRoleEnvironment,
         SNOWFLAKE_LOG_LEVEL: "TRACE",
         AOSS_REGION: Aws.REGION,
         AOSS_NODE: config.vectorStore.collection.attrCollectionEndpoint,
@@ -127,7 +131,9 @@ export class Lambdas extends Construct implements IDependable {
       },
       memorySize: 256,
       architecture: Architecture.ARM_64,
-      timeout: Duration.seconds(30),
+      // A question takes about 20 seconds end to end (embedding, vector search, Claude, Snowflake query),
+      // and a cold Snowflake warehouse can add more. The function is invoked directly, with no API Gateway in front.
+      timeout: Duration.seconds(90),
       runtime: Runtime.NODEJS_LATEST,
       logGroup: textToSqlFunctionLogGroup,
       layers: [config.layers.powerToolsLayer, config.layers.lambdasLayer],
@@ -166,6 +172,7 @@ export class Lambdas extends Construct implements IDependable {
         SNOWFLAKE_WAREHOUSE: config.snowflakeConnection.snowflakeWarehouse,
         SNOWFLAKE_AUTHENTICATION: JSON.stringify(config.snowflakeAuthentication),
         SNOWFLAKE_SCHEMA: config.snowflakeConnection.snowflakeSchema,
+        ...snowflakeRoleEnvironment,
         SNOWFLAKE_LOG_LEVEL: "TRACE",
         AOSS_REGION: Aws.REGION,
         AOSS_NODE: config.vectorStore.collection.attrCollectionEndpoint,

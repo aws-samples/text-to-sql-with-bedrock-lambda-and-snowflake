@@ -58,6 +58,7 @@ export function defaultBasicLambdaTools(
       authentication: JSON.parse(process.env.SNOWFLAKE_AUTHENTICATION!) as SnowflakeAuthentication,
       warehouse: process.env.SNOWFLAKE_WAREHOUSE!,
       schema: process.env.SNOWFLAKE_SCHEMA!,
+      role: process.env.SNOWFLAKE_ROLE || undefined,
     },
   },
 ): BasicLambdaTools {

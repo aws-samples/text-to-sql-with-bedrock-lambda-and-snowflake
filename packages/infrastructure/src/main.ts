@@ -19,8 +19,7 @@ import { App, Aspects } from "aws-cdk-lib";
 
 import { TextToSqlWithLambdaAndSnowflakeStack } from "./stacks";
 import { AwsSolutionsChecks } from "cdk-nag";
-import { UsernameAndPasswordAuthentication } from "./runtime/utils";
-import { SubnetType } from "aws-cdk-lib/aws-ec2";
+import { KeyPairAuthentication } from "./runtime/utils";
 
 const app = new App();
 
@@ -33,26 +32,34 @@ new TextToSqlWithLambdaAndSnowflakeStack(app, "text-to-sql-with-lambda-and-snowf
   },
   snowflakeAccountId: "<YOUR_SNOWFLAKE_ACCOUNT_ID>",
   snowflakeDb: "IMDB",
-  //use one of the following authentication methods for Snowflake
-  // snowflakeAuthentication: new KeyPairAuthentication(username, ssm_parameter_name_with_private_key),
+  // Key-pair authentication is the default and recommended method. Snowflake doesn't allow password sign-in
+  // for TYPE = SERVICE users. The second argument is "<secret-name>/<json-key>": the stack creates a
+  // Secrets Manager secret with that name, and you store the private key in it under that key after deploying.
+  snowflakeAuthentication: new KeyPairAuthentication("TEXT_TO_SQL_SVC", "text-to-sql-snowflake/privateKey"),
+  // Or OAuth client credentials:
   // snowflakeAuthentication: new OAuthClientCredentialsAuthentication(
   //   username,
-  //   ssm_parameter_name_with_client_credentials,
+  //   "<secret-name>/<json-key>",
   //   tokenUrl,
   //   clientId,
   //   scope,
   // ),
-  snowflakeAuthentication: new UsernameAndPasswordAuthentication("username", "ssm_parameter_name_with_user_password"),
-  snowflakeRole: "SYSADMIN",
+  // UsernameAndPasswordAuthentication is deprecated and doesn't work for TYPE = SERVICE users.
+  //
+  // Optional. When omitted, Snowflake uses the user's default role.
+  snowflakeRole: "TEXT_TO_SQL_ROLE",
   snowflakeSchema: "PUBLIC",
   snowflakeWarehouse: "TEST_WH",
-  vpcConfig: {
-    vpcId: "privatelink-vpce-id",
-    subnets: {
-      subnetType: SubnetType.PRIVATE_WITH_EGRESS,
-      onePerAz: true,
-    },
-  },
+  // Optional. Runs the Lambda functions in a VPC. See "Connect to Snowflake over AWS PrivateLink" in the README.
+  // vpcConfig: {
+  //   vpcId: "<YOUR_VPC_ID>",
+  //   subnets: {
+  //     subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+  //     onePerAz: true,
+  //   },
+  // },
+  // Optional. Set to false (with vpcConfig) to allow OpenSearch Serverless access only through its VPC endpoint.
+  // aossAllowPublicAccess: false,
 });
 Aspects.of(app).add(new AwsSolutionsChecks());
 app.synth();

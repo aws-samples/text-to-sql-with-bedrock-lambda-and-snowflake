@@ -18,7 +18,10 @@
 export interface SnowflakeConnection {
   snowflakeAccountId: string;
   snowflakeDb: string;
-  snowflakeRole: string;
+  /**
+   * Optional Snowflake role for the Lambda sessions. When omitted, Snowflake uses the user's default role.
+   */
+  snowflakeRole?: string;
   snowflakeWarehouse: string;
   snowflakeSchema: string;
 }

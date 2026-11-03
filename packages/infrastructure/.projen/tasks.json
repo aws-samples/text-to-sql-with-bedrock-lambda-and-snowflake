@@ -158,6 +158,9 @@
       "steps": [
         {
           "spawn": "eslint"
+        },
+        {
+          "exec": "vitest run"
         }
       ]
     },

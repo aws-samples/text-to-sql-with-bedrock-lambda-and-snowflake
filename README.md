@@ -7,7 +7,7 @@ This CDK project provide and example of using Bedrock with Lambda to interface d
 ![text-to-sql-for-snowflake.drawio.png](images%2Ftext-to-sql-for-snowflake.drawio.png)
 This architecture uses the following services
 
-* [Amazon Bedrock](https://aws.amazon.com/bedrock/) - The example leverages the [Amazon Titan Embedding G1 - Text Model](https://docs.aws.amazon.com/bedrock/latest/userguide/titan-embedding-models.html) to generate vector representations of Snowflake table metadata and [Anthropic Claude 3 Haiku](https://docs.aws.amazon.com/bedrock/latest/userguide/model-parameters-anthropic-claude-messages.html) to generate SQL via Amazon Bedrock API.
+* [Amazon Bedrock](https://aws.amazon.com/bedrock/) - The example uses [Amazon Nova Multimodal Embeddings](https://docs.aws.amazon.com/nova/latest/nova2-userguide/embeddings.html) (`amazon.nova-2-multimodal-embeddings-v1:0`, 1024 dimensions) to generate vector representations of Snowflake table metadata, and [Anthropic Claude Haiku 5.5](https://docs.aws.amazon.com/bedrock/latest/userguide/model-parameters-anthropic-claude-messages.html) to generate SQL via the Amazon Bedrock API. Haiku 5.5 is called through the `us.anthropic.claude-haiku-5-5` [cross-Region inference profile](https://docs.aws.amazon.com/bedrock/latest/userguide/cross-region-inference.html), so the stack must be deployed to a US Region.
 * [Vector Engine for Amazon OpenSearch Serverless](https://aws.amazon.com/opensearch-service/serverless-vector-engine/) - The example stores the vector representations of Snowflake table metadata in an Amazon Opensearch vector search collection.
 * [AWS Lambda](https://aws.amazon.com/lambda/) - The example use two AWS Lambda functions
   * [IndexTablesFunction](packages%2Finfrastructure%2Fsrc%2Fruntime%2Fhandlers%2FIndexTables.ts) - This function queries Snowflake for table metadata, turns that metadata into vector representations using Bedrock and the stores those representations in OpenSearch
@@ -21,7 +21,8 @@ This architecture uses the following services
 * [pnpm installed](https://pnpm.io/installation)
 * An AWS account
   * [CDK bootstrapped in the account](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping.html)
-  * [Anthropic and Titan models enabled for Bedrock in the account](https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html)
+  * [Access to Claude Haiku 5.5 and Amazon Nova Multimodal Embeddings in Amazon Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html). For Anthropic models, complete the first-time use form, then invoke Claude Haiku 5.5 once from the Bedrock console playground before you deploy. The first call to a third-party model starts its AWS Marketplace subscription, and the Lambda roles in this stack don't have Marketplace permissions.
+  * If you are upgrading an existing deployment that indexed tables with Titan embeddings (1536 dimensions), delete the OpenSearch index named by `aossIndexName` (or choose a new name) and run the IndexTablesFunction again. The index is created at 1024 dimensions the first time documents are written to it.
 * [AWS account credentials available on the command line](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-authentication.html) 
 
 ## Deployment

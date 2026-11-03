@@ -47,6 +47,47 @@ export interface LambdasConfig {
 
 export interface SnowflakePrivateLinkLambdaConfig {}
 
+const NOVA_EMBEDDINGS_MODEL_ID = "amazon.nova-2-multimodal-embeddings-v1:0";
+const HAIKU_INFERENCE_PROFILE_ID = "us.anthropic.claude-haiku-5-5";
+const HAIKU_FOUNDATION_MODEL_ID = "anthropic.claude-haiku-5-5";
+
+/**
+ * Allows invoking the Nova embeddings model in the stack Region.
+ */
+function novaEmbeddingsPolicy(): PolicyStatement {
+  return new PolicyStatement({
+    effect: Effect.ALLOW,
+    actions: ["bedrock:InvokeModel"],
+    resources: [`arn:${Aws.PARTITION}:bedrock:${Aws.REGION}::foundation-model/${NOVA_EMBEDDINGS_MODEL_ID}`],
+  });
+}
+
+/**
+ * Allows invoking Claude Haiku 5.5 through the US cross-Region inference profile.
+ * The profile can route a request to the foundation model in any of its destination Regions,
+ * so the foundation model is allowed in every Region, but only when called through this profile.
+ */
+function haikuInferenceProfilePolicies(): PolicyStatement[] {
+  const inferenceProfileArn = `arn:${Aws.PARTITION}:bedrock:${Aws.REGION}:${Aws.ACCOUNT_ID}:inference-profile/${HAIKU_INFERENCE_PROFILE_ID}`;
+  return [
+    new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: ["bedrock:InvokeModel"],
+      resources: [inferenceProfileArn],
+    }),
+    new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: ["bedrock:InvokeModel"],
+      resources: [`arn:${Aws.PARTITION}:bedrock:*::foundation-model/${HAIKU_FOUNDATION_MODEL_ID}`],
+      conditions: {
+        StringEquals: {
+          "bedrock:InferenceProfileArn": inferenceProfileArn,
+        },
+      },
+    }),
+  ];
+}
+
 export class Lambdas extends Construct implements IDependable {
   readonly textToSql: IFunction;
   readonly indexTables: IFunction;
@@ -95,14 +136,8 @@ export class Lambdas extends Construct implements IDependable {
       securityGroups: config.securityGroups,
       tracing: Tracing.ACTIVE,
       initialPolicy: [
-        new PolicyStatement({
-          effect: Effect.ALLOW,
-          actions: ["bedrock:InvokeModel"],
-          resources: [
-            `arn:${Aws.PARTITION}:bedrock:${Aws.REGION}::foundation-model/amazon.titan-embed-text-v1`,
-            `arn:${Aws.PARTITION}:bedrock:${Aws.REGION}::foundation-model/anthropic.*`,
-          ],
-        }),
+        novaEmbeddingsPolicy(),
+        ...haikuInferenceProfilePolicies(),
         new PolicyStatement({
           effect: Effect.ALLOW,
           actions: ["aoss:APIAccessAll"],
@@ -148,14 +183,7 @@ export class Lambdas extends Construct implements IDependable {
       vpcSubnets: config.selectedSubnets,
       securityGroups: config.securityGroups,
       initialPolicy: [
-        new PolicyStatement({
-          effect: Effect.ALLOW,
-          actions: ["bedrock:InvokeModel"],
-          resources: [
-            `arn:${Aws.PARTITION}:bedrock:${Aws.REGION}::foundation-model/amazon.titan-embed-text-v1`,
-            `arn:${Aws.PARTITION}:bedrock:${Aws.REGION}::foundation-model/anthropic.*`,
-          ],
-        }),
+        novaEmbeddingsPolicy(),
         new PolicyStatement({
           effect: Effect.ALLOW,
           actions: ["aoss:APIAccessAll"],

@@ -15,10 +15,11 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import { BedrockRuntimeClient, InvokeModelCommand } from "@aws-sdk/client-bedrock-runtime";
 import { defaultProvider } from "@aws-sdk/credential-provider-node";
-import { BedrockEmbeddings } from "@langchain/community/embeddings/bedrock";
 import { OpenSearchVectorStore } from "@langchain/community/vectorstores/opensearch";
 import { Document } from "@langchain/core/documents";
+import { Embeddings, EmbeddingsParams } from "@langchain/core/embeddings";
 import { Client, RequestParams } from "@opensearch-project/opensearch";
 import { AwsSigv4Signer } from "@opensearch-project/opensearch/aws";
 import { ApiResponse, Context, TransportRequestOptions } from "@opensearch-project/opensearch/lib/Transport.d.ts";
@@ -37,6 +38,76 @@ export interface OpenSearchConfig {
   indexName: string;
 }
 
+export const NOVA_EMBEDDINGS_MODEL_ID = "amazon.nova-2-multimodal-embeddings-v1:0";
+/**
+ * Vector size requested from Nova. The OpenSearch vector store creates the knn index
+ * from the length of the first vector it writes, so the index is created at this size.
+ */
+export const NOVA_EMBEDDING_DIMENSION = 1024;
+
+export interface NovaEmbeddingsParams extends EmbeddingsParams {
+  client: BedrockRuntimeClient;
+  model?: string;
+  dimension?: 256 | 384 | 1024 | 3072;
+}
+
+type NovaEmbeddingPurpose = "GENERIC_INDEX" | "TEXT_RETRIEVAL";
+
+/**
+ * LangChain embeddings for Amazon Nova Multimodal Embeddings (text only).
+ * LangChain's BedrockEmbeddings sends the Titan request body, which Nova rejects.
+ * Documents are embedded for indexing and queries for text retrieval, as the Nova docs recommend.
+ */
+export class NovaEmbeddings extends Embeddings {
+  private readonly client: BedrockRuntimeClient;
+  private readonly model: string;
+  private readonly dimension: number;
+
+  constructor(params: NovaEmbeddingsParams) {
+    super({ maxConcurrency: 5, ...params });
+    this.client = params.client;
+    this.model = params.model ?? NOVA_EMBEDDINGS_MODEL_ID;
+    this.dimension = params.dimension ?? NOVA_EMBEDDING_DIMENSION;
+  }
+
+  async embedDocuments(documents: string[]): Promise<number[][]> {
+    return Promise.all(documents.map((document) => this.embed(document, "GENERIC_INDEX")));
+  }
+
+  async embedQuery(query: string): Promise<number[]> {
+    return this.embed(query, "TEXT_RETRIEVAL");
+  }
+
+  private async embed(text: string, embeddingPurpose: NovaEmbeddingPurpose): Promise<number[]> {
+    return this.caller.call(async () => {
+      const response = await this.client.send(
+        new InvokeModelCommand({
+          modelId: this.model,
+          contentType: "application/json",
+          accept: "application/json",
+          body: JSON.stringify({
+            taskType: "SINGLE_EMBEDDING",
+            singleEmbeddingParams: {
+              embeddingPurpose,
+              embeddingDimension: this.dimension,
+              text: {
+                truncationMode: "END",
+                value: text.replace(/\n/g, " "),
+              },
+            },
+          }),
+        }),
+      );
+      const body = JSON.parse(new TextDecoder().decode(response.body));
+      const embedding: number[] | undefined = body.embeddings?.[0]?.embedding;
+      if (embedding == undefined || embedding.length != this.dimension) {
+        throw new Error(`Unexpected Nova embeddings response: expected ${this.dimension} dimensions, got ${embedding?.length ?? "none"}`);
+      }
+      return embedding;
+    });
+  }
+}
+
 export class OpenSearch implements OpenSearchApiCalls {
   static instance(config: OpenSearchConfig, aws: AwsApiCalls, powertools: Powertools | undefined) {
     if (this._instance == undefined) {
@@ -53,7 +124,7 @@ export class OpenSearch implements OpenSearchApiCalls {
   private _powertools: Powertools | undefined;
 
   private _client?: Client;
-  private _embeddings?: BedrockEmbeddings;
+  private _embeddings?: NovaEmbeddings;
 
   private constructor(config: OpenSearchConfig, aws: AwsApiCalls, powertools: Powertools | undefined) {
     this.config = config;
@@ -65,11 +136,13 @@ export class OpenSearch implements OpenSearchApiCalls {
     return new OpenSearch(config, aws, powertools);
   }
 
-  private get embeddings(): BedrockEmbeddings {
+  private get embeddings(): NovaEmbeddings {
     if (this._embeddings == undefined) {
-      this._embeddings = new BedrockEmbeddings({
-        client: this._aws?.bedrockRuntimeClient,
-        model: "amazon.titan-embed-text-v1", // Default value
+      if (this._aws == undefined) {
+        throw new Error("AWS API calls are required to create Nova embeddings");
+      }
+      this._embeddings = new NovaEmbeddings({
+        client: this._aws.bedrockRuntimeClient,
       });
     }
     return this._embeddings;

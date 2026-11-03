@@ -221,6 +221,9 @@ export class Snowflake implements SnowflakeApiCalls {
         configure({
           // @ts-ignore
           logLevel: process.env.SNOWFLAKE_LOG_LEVEL != undefined ? process.env.SNOWFLAKE_LOG_LEVEL : "INFO",
+          // snowflake-sdk 3.4.0 turned OCSP certificate revocation checks off by default.
+          // Keep them on, as they were with snowflake-sdk 1.x.
+          disableOCSPChecks: false,
         });
         const con = createConnection(options);
         con.connect((err, conn) => {

@@ -23,6 +23,12 @@ const powertools = new Powertools({
 });
 
 /**
+ * Claude Haiku 5.5 through the US cross-Region inference profile.
+ * On-demand calls to Haiku 5.5 require the inference profile; the bare model ID is rejected.
+ */
+export const TEXT_TO_SQL_MODEL_ID = "us.anthropic.claude-haiku-5-5";
+
+/**
  * This lambda handler queries snowflake table metadata, vectorizes the results, and stores them in opensearch
  *
  * @param event
@@ -48,7 +54,63 @@ export const onEventHandler: LambdaHandler<Record<string, any>, Record<string, a
         return value.pageContent;
       })
       .join(" ");
-    const prompt = `Your task is to generate a SNOWFLAKE SQL query based on a given natural language query and the provided database metadata. 
+    const prompt = buildPrompt(pageContents, humanQuery);
+    const body = buildRequestBody(prompt);
+    const response = await tools.aws.invokeModel({
+      modelId: TEXT_TO_SQL_MODEL_ID,
+      contentType: "application/json",
+      accept: "application/json",
+      body: JSON.stringify(body),
+    });
+    const assistantResponse = JSON.parse(response.body.transformToString("utf-8"));
+    logger.info(`Assistant Response: ${JSON.stringify(assistantResponse)}`);
+    const assistantText = extractText(assistantResponse);
+    logger.info(`Assistant Text: ${assistantText}`);
+    const regexResult = new RegExp("sql\n([^\u0060]*)", "gm").exec(assistantText);
+    logger.info(`Regex Result: ${JSON.stringify(regexResult)}`);
+    if (regexResult != null) {
+      const sql = regexResult[1];
+      logger.info(`SQL: ${sql}`);
+      const results = await tools.snowflake.execute(sql);
+      return {
+        results: results,
+      };
+    }
+  } else {
+    logger.warn(`No vector search results found for query '${humanQuery}'`);
+  }
+
+  return {
+    results: "nothing",
+  };
+};
+
+/**
+ * Joins the text blocks of a Messages API response.
+ * Haiku 5.5 can put a thinking block before the answer, so the first block is not always text.
+ */
+export function extractText(assistantResponse: { content?: { type: string; text?: string }[] }): string {
+  return (assistantResponse.content ?? [])
+    .filter((block) => block.type == "text" && block.text != undefined)
+    .map((block) => block.text)
+    .join("\n");
+}
+
+export function buildRequestBody(prompt: string): Record<string, any> {
+  return {
+    anthropic_version: "bedrock-2023-05-31",
+    max_tokens: 3000,
+    messages: [
+      {
+        role: "user",
+        content: prompt,
+      },
+    ],
+  };
+}
+
+export function buildPrompt(pageContents: string, humanQuery: string): string {
+  return `Your task is to generate a SNOWFLAKE SQL query based on a given natural language query and the provided database metadata. 
 
       You are a SNOWFLAKE SQL generator agent. Your job is to transform the natural language query inside the QUESTION tags into SNOWFLAKE compliant SQL using the database metadata found inside the METADATA tags.
       
@@ -131,43 +193,6 @@ export const onEventHandler: LambdaHandler<Record<string, any>, Record<string, a
       <QUESTION>
       ${humanQuery}
       </QUESTION>`;
-    const body = {
-      anthropic_version: "bedrock-2023-05-31",
-      max_tokens: 3000,
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-    };
-    const response = await tools.aws.invokeModel({
-      modelId: "anthropic.claude-3-haiku-20240307-v1:0",
-      contentType: "application/json",
-      accept: "application/json",
-      body: JSON.stringify(body),
-    });
-    const assistantResponse = JSON.parse(response.body.transformToString("utf-8"));
-    logger.info(`Assistant Response: ${JSON.stringify(assistantResponse)}`);
-    const assistantText = assistantResponse.content[0].text;
-    logger.info(`Assistant Text: ${assistantText}`);
-    const regexResult = new RegExp("sql\n([^\u0060]*)", "gm").exec(assistantText);
-    logger.info(`Regex Result: ${JSON.stringify(regexResult)}`);
-    if (regexResult != null) {
-      const sql = regexResult[1];
-      logger.info(`SQL: ${sql}`);
-      const results = await tools.snowflake.execute(sql);
-      return {
-        results: results,
-      };
-    }
-  } else {
-    logger.warn(`No vector search results found for query '${humanQuery}'`);
-  }
-
-  return {
-    results: "nothing",
-  };
-};
+}
 
 export const onEvent = powertools.wrap(onEventHandler);

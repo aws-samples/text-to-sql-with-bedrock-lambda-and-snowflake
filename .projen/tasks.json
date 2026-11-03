@@ -123,7 +123,7 @@
           "cwd": "/Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/key-pair"
         },
         {
-          "say": "Store this value in your SSM Parameter",
+          "say": "Store this private key in the stack's Secrets Manager secret (see the README)",
           "exec": "cat snowflake.p8",
           "cwd": "/Users/awsgalen/IdeaProjects/text-to-sql-with-athena-and-snowflake/key-pair"
         },

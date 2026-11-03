@@ -53,6 +53,16 @@ export interface OpenSearchServerlessVectorStoreConfig {
   vpc?: IVpc;
   subnets?: SubnetSelection;
   securityGroups?: SecurityGroup[];
+  /**
+   * Whether the collection's network policy allows access from the public internet. Requests are still
+   * authenticated and authorized with IAM (SigV4) and the collection's data access policies.
+   *
+   * Set to false to allow access only through the OpenSearch Serverless VPC endpoint the construct creates,
+   * which requires `vpc`.
+   *
+   * @default true
+   */
+  allowPublicAccess?: boolean;
 }
 
 export class OpenSearchServerlessVectorStore extends Construct implements IDependable {
@@ -63,9 +73,13 @@ export class OpenSearchServerlessVectorStore extends Construct implements IDepen
     Dependable.implement(this, {
       dependencyRoots: [this],
     });
+    const allowPublicAccess = config.allowPublicAccess ?? true;
     this.node.addValidation({
       validate(): string[] {
         const messages: string[] = [];
+        if (!allowPublicAccess && config.vpc == undefined) {
+          messages.push("allowPublicAccess: false requires a vpc, because the collection is then reachable only through a VPC endpoint");
+        }
         return messages;
       },
     });
@@ -84,8 +98,9 @@ export class OpenSearchServerlessVectorStore extends Construct implements IDepen
       ],
       AWSOwnedKey: true,
     };
-    const networkPolicies: NetworkPolicy[] = [
-      {
+    const networkPolicies: NetworkPolicy[] = [];
+    if (allowPublicAccess) {
+      networkPolicies.push({
         Description: "Public access",
         Rules: [
           {
@@ -98,8 +113,8 @@ export class OpenSearchServerlessVectorStore extends Construct implements IDepen
           },
         ],
         AllowFromPublic: true,
-      },
-    ];
+      });
+    }
 
     if (config.vpc != undefined) {
       const vpce = new CfnVpcEndpoint(this, "AossVpce", {

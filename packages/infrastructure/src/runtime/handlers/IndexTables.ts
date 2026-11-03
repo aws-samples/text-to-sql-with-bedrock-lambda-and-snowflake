@@ -19,6 +19,7 @@ import { Logger } from "@aws-lambda-powertools/logger";
 import { Document } from "@langchain/core/documents";
 import { Callback, Context } from "aws-lambda";
 import { BasicLambdaTools, defaultBasicLambdaTools, LambdaHandler, Powertools } from "../utils";
+import { waitUntilSearchable } from "../utils/OpenSearch";
 import { SnowflakeApiCalls } from "../utils/Snowflake";
 
 const powertools = new Powertools({
@@ -44,6 +45,16 @@ export const onEventHandler: LambdaHandler<Record<string, any>, Record<string, a
   logger.info(`Event: ${JSON.stringify(event)}`);
   const docs = await buildTableMetaData(tools.snowflake, logger);
   await tools.aoss.addDocuments(docs);
+  if (docs.length > 0) {
+    // New documents take about a minute to become searchable in OpenSearch Serverless.
+    // Wait (up to 2 minutes) so the TextToSqlFunction can find the tables as soon as this function returns.
+    logger.info(`Indexed ${docs.length} tables. Waiting for them to become searchable`);
+    if (await waitUntilSearchable(tools.aoss, docs[0].pageContent)) {
+      logger.info("Indexed tables are searchable");
+    } else {
+      logger.warn("Indexed tables are not searchable yet. Wait a minute before asking the TextToSqlFunction a question");
+    }
+  }
   return docs;
 };
 

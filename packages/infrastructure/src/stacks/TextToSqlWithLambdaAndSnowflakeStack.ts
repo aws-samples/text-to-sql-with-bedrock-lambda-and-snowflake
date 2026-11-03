@@ -15,7 +15,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { Duration, Fn, RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
+import { CfnOutput, Duration, Fn, RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
 import { SnowflakeConnection } from "./index";
 import { Construct } from "constructs";
 import { Layers } from "../constructs/Layers";
@@ -48,6 +48,14 @@ export interface TextToSqlWithLambdaAndSnowflakeStackProps extends StackProps, S
    */
   snowflakePrivateLinkConfig?: SnowflakePrivateLinkConfig;
   vpcConfig?: VpcConfig;
+  /**
+   * Whether the OpenSearch Serverless collection's network policy allows access from the public internet.
+   * Access is still gated by IAM (SigV4) and the collection's data access policies.
+   * Set to false to allow access only through the collection's VPC endpoint. Requires `vpcConfig`.
+   *
+   * @default true
+   */
+  aossAllowPublicAccess?: boolean;
 }
 
 /**
@@ -157,11 +165,12 @@ export class TextToSqlWithLambdaAndSnowflakeStack extends Stack {
     }
 
     const secretStringTemplate: { [key: string]: string } = {};
+    const secretName = props.snowflakeAuthentication.parameterName.split("/")[0] as string;
     const keyName = props.snowflakeAuthentication.parameterName.split("/")[1] as string;
     secretStringTemplate[keyName] = "";
 
     const secret = new Secret(this, "SnowflakeAuthenticationSecret", {
-      secretName: props.snowflakeAuthentication.parameterName.split("/")[0],
+      secretName: secretName,
       description: "Snowflake authentication secret",
       generateSecretString: {
         secretStringTemplate: JSON.stringify(secretStringTemplate),
@@ -176,6 +185,7 @@ export class TextToSqlWithLambdaAndSnowflakeStack extends Stack {
       subnets: selectedSubnets,
       vpc: vpc,
       securityGroups: securityGroups,
+      allowPublicAccess: props.aossAllowPublicAccess,
     });
 
     const lambdas = new Lambdas(this, "Lambdas", {
@@ -193,6 +203,15 @@ export class TextToSqlWithLambdaAndSnowflakeStack extends Stack {
       secret: secret,
     });
     lambdas.node.addDependency(secret);
+
+    new CfnOutput(this, "SnowflakeAuthenticationSecretName", {
+      description: `Secrets Manager secret to store the Snowflake credential in, as JSON under the "${keyName}" key`,
+      value: secretName,
+    });
+    new CfnOutput(this, "SnowflakeAuthenticationSecretArn", {
+      description: "ARN of the Secrets Manager secret that holds the Snowflake credential",
+      value: secret.secretArn,
+    });
     this.cdkNagSuppressions();
   }
 

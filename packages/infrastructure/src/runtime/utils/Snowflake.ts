@@ -55,7 +55,14 @@ export abstract class AbstractSnowflakeAuthentication implements SnowflakeAuthen
 }
 
 /**
- * Uses native snowflake username and password authentication
+ * Uses native snowflake username and password authentication.
+ *
+ * The password is read from the stack's Secrets Manager secret. `parameterName` is `<secret-name>/<json-key>`.
+ *
+ * @deprecated Snowflake no longer allows password sign-in for `TYPE = SERVICE` users, and has deprecated
+ * single-factor password sign-in for every user type. A Lambda function can't complete an MFA prompt, so this
+ * method doesn't work against most Snowflake accounts. Use {@link KeyPairAuthentication} instead.
+ * See https://docs.snowflake.com/en/user-guide/security-mfa-rollout
  */
 export class UsernameAndPasswordAuthentication extends AbstractSnowflakeAuthentication {
   readonly type: SnowflakeAuthenticationTypes = SnowflakeAuthenticationTypes.UsernameAndPassword;
@@ -66,7 +73,11 @@ export class UsernameAndPasswordAuthentication extends AbstractSnowflakeAuthenti
 }
 
 /**
- * Uses snowflake key-pair authentication. Private key is stored in SSM Parameter Store as a SecureString
+ * Uses snowflake key-pair authentication. This is the recommended method, and the only one that works for
+ * `TYPE = SERVICE` users.
+ *
+ * The PEM-encoded, unencrypted PKCS#8 private key is read from the stack's Secrets Manager secret.
+ * `parameterName` is `<secret-name>/<json-key>`.
  *
  * See https://docs.snowflake.com/en/developer-guide/node-js/nodejs-driver-authenticate#using-key-pair-authentication-and-key-pair-rotation
  */
@@ -79,7 +90,9 @@ export class KeyPairAuthentication extends AbstractSnowflakeAuthentication {
 }
 
 /**
- * Uses snowflake external OAuth authentication with Client Credentials flow. Client secret is stored in SSM Parameter Store as a SecureString
+ * Uses snowflake external OAuth authentication with Client Credentials flow.
+ *
+ * The OAuth client secret is read from the stack's Secrets Manager secret. `parameterName` is `<secret-name>/<json-key>`.
  *
  * See https://docs.snowflake.com/en/developer-guide/node-js/nodejs-driver-authenticate#using-oauth
  */
@@ -106,6 +119,30 @@ export interface SnowflakeConfig {
   warehouse: string;
   database: string;
   schema: string;
+  /**
+   * Role for the session. When undefined, Snowflake uses the user's default role.
+   */
+  role?: string;
+}
+
+/**
+ * Connection option keys that are safe to log. Everything else (privateKey, privateKeyPass, password, token,
+ * oauthClientSecret, and any key added later) is left out, so new secret-bearing options are never logged by default.
+ */
+const LOGGABLE_CONNECTION_OPTIONS = ["account", "application", "username", "role", "warehouse", "database", "schema", "authenticator"] as const;
+
+/**
+ * Returns the non-secret subset of the connection options, for logging.
+ */
+export function loggableConnectionOptions(options: ConnectionOptions): Record<string, unknown> {
+  const loggable: Record<string, unknown> = {};
+  for (const key of LOGGABLE_CONNECTION_OPTIONS) {
+    const value = (options as Record<string, unknown>)[key];
+    if (value != undefined) {
+      loggable[key] = value;
+    }
+  }
+  return loggable;
 }
 
 export class Snowflake implements SnowflakeApiCalls {
@@ -140,6 +177,8 @@ export class Snowflake implements SnowflakeApiCalls {
       let options: ConnectionOptions;
       const parameterName: string = this.config.authentication.parameterName.split("/")[0];
       const parameterKey: string = this.config.authentication.parameterName.split("/")[1];
+      // Only set a role when one is configured, so Snowflake falls back to the user's default role.
+      const role: { role?: string } = this.config.role ? { role: this.config.role } : {};
       switch (this.config.authentication.type) {
         case SnowflakeAuthenticationTypes.KeyPair:
           const privateKeyPem = await this.getParameter(this._aws!, parameterName, parameterKey);
@@ -153,9 +192,13 @@ export class Snowflake implements SnowflakeApiCalls {
             warehouse: this.config.warehouse,
             database: this.config.database,
             schema: this.config.schema,
+            ...role,
           };
           break;
         case SnowflakeAuthenticationTypes.UsernameAndPassword:
+          this._powertools?.logger.warn(
+            "UsernameAndPassword authentication is deprecated. Snowflake blocks password sign-in for TYPE = SERVICE users and single-factor password sign-in for other users. Use KeyPair authentication.",
+          );
           const password = await this.getParameter(this._aws!, parameterName, parameterKey);
           options = {
             account: this.config.account,
@@ -166,6 +209,7 @@ export class Snowflake implements SnowflakeApiCalls {
             warehouse: this.config.warehouse,
             database: this.config.database,
             schema: this.config.schema,
+            ...role,
           };
           break;
         case SnowflakeAuthenticationTypes.OAuthClientCredentials:
@@ -212,10 +256,12 @@ export class Snowflake implements SnowflakeApiCalls {
             warehouse: this.config.warehouse,
             database: this.config.database,
             schema: this.config.schema,
+            ...role,
           };
           break;
       }
-      this._powertools?.logger.info(`Options ${JSON.stringify(options)}`);
+      // Never log the full options: they hold the private key, password or OAuth token.
+      this._powertools?.logger.info("Connecting to Snowflake", { options: loggableConnectionOptions(options) });
       const pt = this._powertools;
       this._connection = await new Promise(function (resolve, reject) {
         configure({

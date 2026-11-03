@@ -212,7 +212,7 @@
           "exec": "pnpm i --no-frozen-lockfile"
         },
         {
-          "exec": "pnpm update @npmcli/arborist @nrwl/devkit @nrwl/workspace @types/node @types/npm-packlist @types/npmcli__arborist constructs nx prettier projen ts-node typescript"
+          "exec": "pnpm update @npmcli/arborist @nx/devkit @nx/workspace @types/node @types/npm-packlist @types/npmcli__arborist constructs nx prettier projen ts-node typescript"
         },
         {
           "exec": "pnpm dlx projen"

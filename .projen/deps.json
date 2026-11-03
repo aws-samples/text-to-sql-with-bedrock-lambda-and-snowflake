@@ -5,13 +5,13 @@
       "type": "build"
     },
     {
-      "name": "@nrwl/devkit",
-      "version": "^19",
+      "name": "@nx/devkit",
+      "version": "^22.7.12",
       "type": "build"
     },
     {
-      "name": "@nrwl/workspace",
-      "version": "^19",
+      "name": "@nx/workspace",
+      "version": "^22.7.12",
       "type": "build"
     },
     {
@@ -34,7 +34,7 @@
     },
     {
       "name": "nx",
-      "version": "^19",
+      "version": "^22.7.12",
       "type": "build"
     },
     {

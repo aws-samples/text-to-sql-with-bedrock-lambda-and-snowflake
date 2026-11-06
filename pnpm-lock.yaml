@@ -84,8 +84,8 @@ importers:
         specifier: ^3.3.3
         version: 3.3.3
       projen:
-        specifier: ^0.88.1
-        version: 0.88.1(constructs@10.8.1)
+        specifier: ^0.104.23
+        version: 0.104.23(constructs@10.8.1)
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@20.16.11)(typescript@5.6.3)
@@ -3876,23 +3876,25 @@ packages:
     resolution: {integrity: sha512-69agxLtnI8xBs9gUGqEnK26UfiexpHy+KUpBQWabiytQjnn5wFY8rklAi7GRfABIuPNnQ/ik48+LGLkYYJcy4A==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
 
-  projen@0.88.1:
-    resolution: {integrity: sha512-LAv/kUAcCSTXH7/E+eeAJln3NvVFvhHgx9ezGPudcEPUOhr98M+Uojt6lniGvKESmk6rDO8AcVvzIhFH3kcz1g==}
+  projen@0.104.23:
+    resolution: {integrity: sha512-Zmuys/IpXn27h/t7X0ui+8RG8gJdVFIqnDegi1fBAuUiSQBmd10MZxMQsiOQ2nfXHB1kKFJ5W+jYxkAirQc7Kg==}
     engines: {node: '>= 16.0.0'}
     hasBin: true
     peerDependencies:
-      constructs: ^10.0.0
+      constructs: ^10.5.0
     bundledDependencies:
       - '@iarna/toml'
       - case
       - chalk
       - comment-json
       - conventional-changelog-config-spec
+      - dax
+      - fast-glob
       - fast-json-patch
-      - glob
       - ini
+      - parse-conflict-json
+      - properties-file
       - semver
-      - shx
       - xmlbuilder2
       - yaml
       - yargs
@@ -8726,7 +8728,7 @@ snapshots:
 
   proggy@2.0.0: {}
 
-  projen@0.88.1(constructs@10.8.1):
+  projen@0.104.23(constructs@10.8.1):
     dependencies:
       constructs: 10.8.1
 

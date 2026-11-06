@@ -5,6 +5,7 @@
 # and pass the pull-request-lint workflow (amannn/action-semantic-pull-request,
 # allowed types: feat, fix, chore).
 #
+#
 # open-pull-requests-limit: 0 keeps routine version-update PRs off; security
 # update PRs are not affected by this limit.
 version: 2

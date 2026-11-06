@@ -30,7 +30,7 @@
     "constructs": "^10.5.0",
     "nx": "^22.7.12",
     "prettier": "^3.3.3",
-    "projen": "^0.88.1",
+    "projen": "^0.104.23",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3"
   },

@@ -16,7 +16,7 @@ updates:
       - "/packages/infrastructure"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 0
+    open-pull-requests-limit: 5
     commit-message:
       prefix: "fix"
       prefix-development: "chore"
@@ -26,7 +26,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 0
+    open-pull-requests-limit: 5
     commit-message:
       prefix: "chore"
       include: "scope"

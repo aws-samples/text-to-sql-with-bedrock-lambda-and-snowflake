@@ -26,9 +26,9 @@ export class Nx extends Component {
 
 		// Add nx library dependencies
 		rootProject.addDevDeps(
-			'nx@^22.7.12',
-			'@nx/devkit@^22.7.12',
-			'@nx/workspace@^22.7.12'
+			'nx@^24.0.5',
+			'@nx/devkit@^24.0.5',
+			'@nx/workspace@^24.0.5'
 		);
 
 		// Add nx.json file
@@ -85,7 +85,8 @@ export class Nx extends Component {
 				// This is used when running 'nx affected ….' command to selectively
 				// run targets against only those packages that have changed since
 				// lastest commit on origin/main
-				affected: {defaultBase: 'origin/main'},
+				// legacy: true is set by the Nx 24 migration so `nx affected` keeps selecting whole projects.
+				affected: {defaultBase: 'origin/main', legacy: true},
 			},
 		});
 	}

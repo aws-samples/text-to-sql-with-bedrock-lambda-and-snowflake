@@ -27,6 +27,9 @@ export class PnpmWorkspace extends Component {
 	constructor(rootProject: Project) {
 		super(rootProject);
 
+		// projen >= 0.104 adds its own (empty) pnpm-workspace.yaml to pnpm projects;
+		// replace it with the one that lists the subprojects.
+		rootProject.tryRemoveFile('pnpm-workspace.yaml');
 		new YamlFile(rootProject, 'pnpm-workspace.yaml', {
 			obj: {
 				packages: rootProject.subprojects.map(

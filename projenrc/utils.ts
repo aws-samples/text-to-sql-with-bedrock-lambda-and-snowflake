@@ -19,6 +19,7 @@ import { NodeProject } from "projen/lib/javascript";
 //@ts-ignore
 import { Link, Node } from "@npmcli/arborist";
 import * as fs from "fs";
+import * as path from "path";
 import { TaskStep } from "projen/lib/task-model";
 import { TypeScriptProject } from "projen/lib/typescript";
 
@@ -73,8 +74,9 @@ export async function zipRuntime(p: NodeProject, exclude: string[] = [], addStep
                 steps.push({
                   exec: `mkdir -p /tmp/${p.name}/nodejs/node_modules/${depName}`
                 });
+                // relative to the package dir (the task's working dir) so tasks.json stays portable
                 steps.push({
-                  exec: `cp -R ${d.path}/* /tmp/${p.name}/nodejs/node_modules/${depName}`
+                  exec: `cp -R ${path.relative(p.outdir, d.path)}/* /tmp/${p.name}/nodejs/node_modules/${depName}`
                 });
               }
               recursivelyGetDependencies(d);
@@ -92,8 +94,8 @@ export async function zipRuntime(p: NodeProject, exclude: string[] = [], addStep
   recursivelyGetDependencies(tree);
   addSteps(p, esBuildExternal).forEach(step => steps.push(step));
 
+  // No cwd: projen runs the task in the package directory.
   p.addTask("zip-runtime", {
-    cwd: p.outdir,
     steps: steps
   });
 
@@ -121,7 +123,8 @@ export function overrideFormatting(p: TypeScriptProject) {
   p.eslint?.addOverride({
     files: ["*"],
     rules: {
-      "max-len": ["error",
+      // projen >= 0.104 moved the formatting rules to @stylistic (eslint 9)
+      "@stylistic/max-len": ["error",
         {
           code: 180,
           ignoreUrls: true,
@@ -135,7 +138,7 @@ export function overrideFormatting(p: TypeScriptProject) {
   });
   const t = p.tasks.addTask("prettier", {
     receiveArgs: true,
-    exec: `prettier  --config ${p.parent?.outdir}/.prettierrc.json --no-error-on-unmatched-pattern --write 'src/**/*.{ts,js,json,jsx}' 'src/*.{ts,js,json,jsx}'`
+    exec: `prettier  --config ${path.relative(p.outdir, p.parent?.outdir ?? p.outdir) || "."}/.prettierrc.json --no-error-on-unmatched-pattern --write 'src/**/*.{ts,js,json,jsx}' 'src/*.{ts,js,json,jsx}'`
   });
   p.tasks.tryFind("eslint")?.spawn(t);
 }

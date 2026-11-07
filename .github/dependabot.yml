@@ -1,13 +1,13 @@
 # Dependabot configuration.
 #
-# Security updates are enabled in the repository settings. This file exists so
-# their PR titles follow Conventional Commits ("fix(deps): ..." / "chore(deps): ...")
-# and pass the pull-request-lint workflow (amannn/action-semantic-pull-request,
-# allowed types: feat, fix, chore).
+# Security updates are enabled in the repository settings. This file turns on
+# weekly version updates for npm and GitHub Actions, and sets commit-message
+# prefixes so PR titles follow Conventional Commits ("fix(deps): ..." /
+# "chore(deps): ...") and pass the pull-request-lint workflow
+# (amannn/action-semantic-pull-request, allowed types: feat, fix, chore).
 #
-#
-# open-pull-requests-limit: 0 keeps routine version-update PRs off; security
-# update PRs are not affected by this limit.
+# open-pull-requests-limit: 5 caps open version-update PRs per ecosystem;
+# security update PRs are not affected by this limit.
 version: 2
 updates:
   - package-ecosystem: "npm"

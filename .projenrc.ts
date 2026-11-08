@@ -134,7 +134,7 @@ const main = async () => {
 		deps: [
 			"@langchain/aws@^1.5.1",
 			"@langchain/community@^1.1.29",
-			"@langchain/core@^1.3.2",
+			"@langchain/core@^1.3.5",
 			"langchain@^1.6.0",
 			"@aws-sdk/client-ssm",
 			"@aws-sdk/client-secrets-manager",
@@ -146,7 +146,7 @@ const main = async () => {
 			"@middy/core",
 			"@types/aws-lambda",
 			"@aws-sdk/client-glue",
-			"@smithy/types",
+			// No direct @smithy/types: nothing imports it, and the AWS SDK clients bring the version they need.
 			"@opensearch-project/opensearch",
 			"@aws-sdk/credential-provider-node"],
 		devDeps: [

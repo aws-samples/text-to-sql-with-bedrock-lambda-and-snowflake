@@ -3,9 +3,10 @@
 !/.projen/tasks.json
 !/.projen/deps.json
 !/.projen/files.json
+!/pnpm-workspace.yaml
 !/package.json
 !/.npmignore
-logs
+/logs
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -31,7 +32,7 @@ jspm_packages/
 !/.npmrc
 !/test/
 !/tsconfig.json
-!/tsconfig.dev.json
+!/test/tsconfig.json
 !/src/
 /lib
 /dist/

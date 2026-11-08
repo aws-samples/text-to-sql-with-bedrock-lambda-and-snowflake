@@ -6,12 +6,12 @@
     },
     {
       "name": "@nx/devkit",
-      "version": "^22.7.12",
+      "version": "^24.0.5",
       "type": "build"
     },
     {
       "name": "@nx/workspace",
-      "version": "^22.7.12",
+      "version": "^24.0.5",
       "type": "build"
     },
     {
@@ -29,12 +29,12 @@
     },
     {
       "name": "constructs",
-      "version": "^10.0.0",
+      "version": "^10.5.0",
       "type": "build"
     },
     {
       "name": "nx",
-      "version": "^22.7.12",
+      "version": "^24.0.5",
       "type": "build"
     },
     {

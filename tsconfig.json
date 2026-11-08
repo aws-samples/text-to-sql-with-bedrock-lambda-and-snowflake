@@ -25,11 +25,18 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "stripInternal": true,
-    "target": "ES2022"
+    "target": "ES2022",
+    "types": [
+      "node",
+      "npm-packlist",
+      "npmcli__arborist"
+    ]
   },
   "include": [
     "src/**/*.ts",
     "projen/**/*.ts"
   ],
-  "exclude": []
+  "exclude": [
+    "node_modules"
+  ]
 }

@@ -29,14 +29,18 @@ import {overrideFormatting, zipLambdaFunction, zipRuntime} from "./projenrc/util
 import {ReleaseTrigger} from "projen/lib/release";
 import {NodeProject, TypeScriptModuleResolution} from "projen/lib/javascript";
 import {ApprovalLevel, AwsCdkTypeScriptApp} from "projen/lib/awscdk";
-import {execSync} from "child_process";
 import {TaskStep} from "projen/lib/task-model";
 import {PrettierRc} from "./projenrc/prettierrc";
+// @ts-ignore
+import {pnpmOverrides} from "./projenrc/overrides";
 
 
 const defaultReleaseBranch = "main";
 
-const cdkVersion = `${execSync("npm show 'aws-cdk-lib' version")}`.trim();
+// Pinned so `npx projen` is reproducible (it used to resolve the latest aws-cdk-lib from npm on every run).
+const cdkVersion = "2.260.0";
+const cdkCliVersion = "^2.1021.0";
+const constructsVersion = "10.5.0";
 const nodeVersion = "20.11.1";
 const pnpmVersion = "9.0.5";
 const jsiiReleaseVersion = "1.94.0";
@@ -47,10 +51,12 @@ const main = async () => {
 		defaultReleaseBranch,
 		packageManager: javascript.NodePackageManager.PNPM,
 		projenCommand: "pnpm dlx projen",
+		pnpmVersion,
 		minNodeVersion: nodeVersion,
 		projenrcTs: true,
 		sampleCode: false,
 		license: "MIT-0",
+		copyrightPeriod: "2024",
 		copyrightOwner: "Amazon.com, Inc. or its affiliates. All Rights Reserved.",
 		tsconfig: {
 			compilerOptions: {
@@ -75,6 +81,7 @@ const main = async () => {
 			"@npmcli/arborist",
 			"@types/npm-packlist",
 			"@types/npmcli__arborist",
+			`constructs@^${constructsVersion}`,
 			"prettier",
 			"projen",
 		]
@@ -86,9 +93,12 @@ const main = async () => {
 		outdir: "./packages/infrastructure",
 		parent: root,
 		cdkVersion,
+		cdkCliVersion,
+		constructsVersion,
 		defaultReleaseBranch,
 		licensed: false,
 		packageManager: root.package.packageManager,
+		pnpmVersion,
 		projenCommand: root.projenCommand,
 		minNodeVersion: root.minNodeVersion,
 		projenrcTs: true,
@@ -101,6 +111,8 @@ const main = async () => {
 		tsconfig: {
 			compilerOptions: {
 				target: "ESNext",
+				// cdk.json runs src/main.ts through ts-node, which needs CommonJS output.
+				module: "CommonJS",
 				esModuleInterop: true,
 				allowSyntheticDefaultImports: true,
 				moduleResolution: TypeScriptModuleResolution.BUNDLER,
@@ -144,7 +156,10 @@ const main = async () => {
 			"cdk-nag",
 			"sinon",
 			"@types/sinon",
-			"vitest@^4.0.0"
+			"vitest@^4.0.0",
+			// Direct pins that keep the patched versions in the lockfile (see projenrc/overrides.ts).
+			"axios@^1.20.0",
+			"vite@^6.4.3"
 		],
 
 	});
@@ -154,6 +169,12 @@ const main = async () => {
 	new PnpmWorkspace(root);
 	new Nx(root); // add nx to root
 	root.package.addField("packageManager", `pnpm@${pnpmVersion}`);
+	root.package.file.addOverride("pnpm.overrides", pnpmOverrides);
+	// projen 0.104 pins v6.1.1; keep the v6.1.2 bump from #24 (pinned by commit SHA).
+	root.github?.tryFindWorkflow("pull-request-lint")?.file?.addOverride(
+		"jobs.validate.steps.0.uses",
+		"amannn/action-semantic-pull-request@2252a14e810aa9b85c2d560bd7070c802206ecf6" // v6.1.2
+	);
 	root.npmrc.addConfig("auto-install-peers", "true");
 	root.tasks.tryFind("compile")?.removeStep(0);
 	root.tasks.addTask("deploy", {
@@ -197,51 +218,44 @@ const main = async () => {
 		"constructs"], (p: NodeProject, esBuildExternal: string) => {
 		const steps: TaskStep[] = [
 			{
-				exec: "rm -Rf ./lib/runtime",
-				cwd: p.outdir
+				exec: "rm -Rf ./lib/runtime"
 			},
 			{
-				exec: "rm -Rf ./dist",
-				cwd: p.outdir
+				exec: "rm -Rf ./dist"
 			},
 			{
-				exec: "mkdir ./dist",
-				cwd: p.outdir
+				exec: "mkdir ./dist"
 			},
 			...zipLambdaFunction("src/runtime/handlers/TextToSql.ts", esBuildExternal),
 			...zipLambdaFunction("src/runtime/handlers/IndexTables.ts", esBuildExternal),
 			{
-				exec: `zip -r ${p.outdir}/dist/lambdas-layer.zip ./nodejs`,
-				cwd: `/tmp/${p.name}`
+				// Runs in the package dir; resolve dist/ before cd so no absolute path is baked into tasks.json.
+				exec: `ZIP_OUT="$PWD/dist/lambdas-layer.zip" && cd /tmp/${p.name} && zip -r "$ZIP_OUT" ./nodejs`
 			}
 		];
 		return steps;
 	});
 	root.addTask("generate-key-pair",{
 		steps:[
+			// Steps run in the root project directory; paths stay relative so tasks.json is portable.
 			{
-				exec: "mkdir -p ./key-pair",
-				cwd: root.outdir
+				exec: "mkdir -p ./key-pair"
 			},
 			{
 				say: "Generating private key",
-				exec: "openssl genrsa 2048 | openssl pkcs8 -topk8 -v2 des3 -inform PEM -out snowflake.p8 -passout pass:'' -passin pass:'' -nocrypt",
-				cwd: `${root.outdir}/key-pair`
+				exec: "openssl genrsa 2048 | openssl pkcs8 -topk8 -v2 des3 -inform PEM -out key-pair/snowflake.p8 -passout pass:'' -passin pass:'' -nocrypt"
 			},
 			{
 				say: "Generating public key",
-				exec: "openssl rsa -in snowflake.p8 -pubout -out snowflake.pub -passin pass:''",
-				cwd: `${root.outdir}/key-pair`
+				exec: "openssl rsa -in key-pair/snowflake.p8 -pubout -out key-pair/snowflake.pub -passin pass:''"
 			},
 			{
 				say: "Store this private key in the stack's Secrets Manager secret (see the README)",
-				exec: "cat snowflake.p8",
-				cwd: `${root.outdir}/key-pair`
+				exec: "cat key-pair/snowflake.p8"
 			},
 			{
 				say: "Assign this value to your snowflake user (https://docs.snowflake.com/en/user-guide/key-pair-auth#assign-the-public-key-to-a-snowflake-user)",
-				exec: "cat snowflake.pub",
-				cwd: `${root.outdir}/key-pair`
+				exec: "cat key-pair/snowflake.pub"
 			},
 
 		]

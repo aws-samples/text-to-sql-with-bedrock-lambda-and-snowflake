@@ -98,8 +98,8 @@ importers:
   packages/infrastructure:
     dependencies:
       '@aws-lambda-powertools/logger':
-        specifier: ^2.9.0
-        version: 2.9.0(@middy/core@4.7.0)
+        specifier: ^2.36.0
+        version: 2.36.0(@middy/core@4.7.0)
       '@aws-lambda-powertools/metrics':
         specifier: ^2.9.0
         version: 2.9.0(@middy/core@4.7.0)
@@ -253,14 +253,20 @@ packages:
   '@aws-crypto/util@5.2.0':
     resolution: {integrity: sha512-4RkU9EsI6ZpBve5fseQlGNUWKMa1RLPQ1dnjnQoe07ldfIzcsGb5hC5W0Dm7u423KWzawlrpbjXBrXCEv9zazQ==}
 
+  '@aws-lambda-powertools/commons@2.36.0':
+    resolution: {integrity: sha512-rYkMu22qpi9wVWCcj51qMj2eKIFyxzpG5Rsasckjq6MPNzafLk/0G/VhFUY536gjWsgwVKZDuM3jMOsdVJFChw==}
+
   '@aws-lambda-powertools/commons@2.9.0':
     resolution: {integrity: sha512-01RHHCDyAHp5uK0jjUxxh2P89lqLEvaP39bxAI4FTuL9ZGbvFnmmzA8MFXtBH/R/oxZgk/+XxzvoNtb46dhVoA==}
 
-  '@aws-lambda-powertools/logger@2.9.0':
-    resolution: {integrity: sha512-1LvpOu1NhjfNh9GEoYW+vsuaD71j9Mh34sSDCF+mX8jSHoaI3b4GMQ1HSJ5UX0GJiZkBl1wfQz4wSRQFzUXZNw==}
+  '@aws-lambda-powertools/logger@2.36.0':
+    resolution: {integrity: sha512-NQrZd6bJNw2CL7DlwU7ta6ktxGIbvyga8znuHRlIAAqRjkpC8pYtfXkYDUEQZGqhTeVS6+tU3YxszHuOB/1nkg==}
     peerDependencies:
-      '@middy/core': 4.x || 5.x
+      '@aws-lambda-powertools/jmespath': 2.36.0
+      '@middy/core': 4.x || 5.x || 6.x || 7.x
     peerDependenciesMeta:
+      '@aws-lambda-powertools/jmespath':
+        optional: true
       '@middy/core':
         optional: true
 
@@ -4766,12 +4772,15 @@ snapshots:
       '@smithy/util-utf8': 2.3.0
       tslib: 2.7.0
 
+  '@aws-lambda-powertools/commons@2.36.0':
+    dependencies:
+      '@aws/lambda-invoke-store': 0.3.0
+
   '@aws-lambda-powertools/commons@2.9.0': {}
 
-  '@aws-lambda-powertools/logger@2.9.0(@middy/core@4.7.0)':
+  '@aws-lambda-powertools/logger@2.36.0(@middy/core@4.7.0)':
     dependencies:
-      '@aws-lambda-powertools/commons': 2.9.0
-      lodash.merge: 4.6.2
+      '@aws-lambda-powertools/commons': 2.36.0
     optionalDependencies:
       '@middy/core': 4.7.0
 

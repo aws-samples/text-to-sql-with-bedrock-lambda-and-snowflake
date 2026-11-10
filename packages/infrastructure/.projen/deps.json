@@ -48,7 +48,7 @@
     },
     {
       "name": "change-case",
-      "version": "4.1.2",
+      "version": "5.4.4",
       "type": "build"
     },
     {
@@ -92,14 +92,17 @@
     },
     {
       "name": "@aws-lambda-powertools/logger",
+      "version": "^2.36.0",
       "type": "runtime"
     },
     {
       "name": "@aws-lambda-powertools/metrics",
+      "version": "^2.36.0",
       "type": "runtime"
     },
     {
       "name": "@aws-lambda-powertools/tracer",
+      "version": "^2.36.0",
       "type": "runtime"
     },
     {
@@ -125,7 +128,7 @@
     },
     {
       "name": "@langchain/aws",
-      "version": "^1.5.1",
+      "version": "^1.5.2",
       "type": "runtime"
     },
     {

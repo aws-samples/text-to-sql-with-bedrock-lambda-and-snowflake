@@ -98,14 +98,14 @@ importers:
   packages/infrastructure:
     dependencies:
       '@aws-lambda-powertools/logger':
-        specifier: ^2.9.0
-        version: 2.9.0(@middy/core@4.7.0)
+        specifier: ^2.36.0
+        version: 2.36.0(@middy/core@4.7.0)
       '@aws-lambda-powertools/metrics':
-        specifier: ^2.9.0
-        version: 2.9.0(@middy/core@4.7.0)
+        specifier: ^2.36.0
+        version: 2.36.0(@middy/core@4.7.0)
       '@aws-lambda-powertools/tracer':
-        specifier: ^2.9.0
-        version: 2.9.0(@middy/core@4.7.0)
+        specifier: ^2.36.0
+        version: 2.36.0(@middy/core@4.7.0)
       '@aws-sdk/client-bedrock-runtime':
         specifier: ^3.1161.0
         version: 3.1161.0
@@ -122,8 +122,8 @@ importers:
         specifier: ^3.667.0
         version: 3.972.92
       '@langchain/aws':
-        specifier: ^1.5.1
-        version: 1.5.1(@langchain/core@1.3.5(@opentelemetry/api@1.8.0)(openai@7.47.0(@aws-sdk/credential-provider-node@3.972.92)(@smithy/hash-node@3.0.7)(@smithy/signature-v4@5.7.5)(google-auth-library@10.9.1)(undici@7.30.1)(ws@8.22.1)(zod@4.6.7))(ws@8.22.1))
+        specifier: ^1.5.2
+        version: 1.5.2(@langchain/core@1.3.5(@opentelemetry/api@1.8.0)(openai@7.47.0(@aws-sdk/credential-provider-node@3.972.92)(@smithy/hash-node@3.0.7)(@smithy/signature-v4@5.7.5)(google-auth-library@10.9.1)(undici@7.30.1)(ws@8.22.1)(zod@4.6.7))(ws@8.22.1))
       '@langchain/community':
         specifier: ^1.1.29
         version: 1.1.29(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.1161.0)(@aws-sdk/credential-provider-node@3.972.92)(@azure/storage-blob@12.26.0)(@browserbasehq/sdk@2.24.0(encoding@0.1.13))(@browserbasehq/stagehand@1.14.0(@playwright/test@1.64.1)(deepmerge@4.3.1)(dotenv@16.6.1)(encoding@0.1.13)(openai@7.47.0(@aws-sdk/credential-provider-node@3.972.92)(@smithy/hash-node@3.0.7)(@smithy/signature-v4@5.7.5)(google-auth-library@10.9.1)(undici@7.30.1)(ws@8.22.1)(zod@4.6.7))(zod@4.6.7))(@google-cloud/storage@7.10.2(encoding@0.1.13))(@ibm-cloud/watsonx-ai@1.7.17)(@langchain/core@1.3.5(@opentelemetry/api@1.8.0)(openai@7.47.0(@aws-sdk/credential-provider-node@3.972.92)(@smithy/hash-node@3.0.7)(@smithy/signature-v4@5.7.5)(google-auth-library@10.9.1)(undici@7.30.1)(ws@8.22.1)(zod@4.6.7))(ws@8.22.1))(@opensearch-project/opensearch@2.12.0)(@opentelemetry/api@1.8.0)(@smithy/eventstream-codec@3.1.6)(@smithy/hash-node@3.0.7)(@smithy/protocol-http@5.6.2)(@smithy/signature-v4@5.7.5)(@smithy/util-utf8@3.0.0)(fast-xml-parser@5.11.2)(google-auth-library@10.9.1)(ibm-cloud-sdk-core@5.9.2)(ignore@7.0.12)(jsonwebtoken@9.0.3)(openai@7.47.0(@aws-sdk/credential-provider-node@3.972.92)(@smithy/hash-node@3.0.7)(@smithy/signature-v4@5.7.5)(google-auth-library@10.9.1)(undici@7.30.1)(ws@8.22.1)(zod@4.6.7))(playwright@1.64.1)(undici@7.30.1)(ws@8.22.1)
@@ -180,8 +180,8 @@ importers:
         specifier: ^2.29.1
         version: 2.29.1(aws-cdk-lib@2.273.0(constructs@10.8.1))(constructs@10.8.1)
       change-case:
-        specifier: 4.1.2
-        version: 4.1.2
+        specifier: 5.4.4
+        version: 5.4.4
       esbuild:
         specifier: 0.25.12
         version: 0.25.12
@@ -253,29 +253,32 @@ packages:
   '@aws-crypto/util@5.2.0':
     resolution: {integrity: sha512-4RkU9EsI6ZpBve5fseQlGNUWKMa1RLPQ1dnjnQoe07ldfIzcsGb5hC5W0Dm7u423KWzawlrpbjXBrXCEv9zazQ==}
 
-  '@aws-lambda-powertools/commons@2.9.0':
-    resolution: {integrity: sha512-01RHHCDyAHp5uK0jjUxxh2P89lqLEvaP39bxAI4FTuL9ZGbvFnmmzA8MFXtBH/R/oxZgk/+XxzvoNtb46dhVoA==}
+  '@aws-lambda-powertools/commons@2.36.0':
+    resolution: {integrity: sha512-rYkMu22qpi9wVWCcj51qMj2eKIFyxzpG5Rsasckjq6MPNzafLk/0G/VhFUY536gjWsgwVKZDuM3jMOsdVJFChw==}
 
-  '@aws-lambda-powertools/logger@2.9.0':
-    resolution: {integrity: sha512-1LvpOu1NhjfNh9GEoYW+vsuaD71j9Mh34sSDCF+mX8jSHoaI3b4GMQ1HSJ5UX0GJiZkBl1wfQz4wSRQFzUXZNw==}
+  '@aws-lambda-powertools/logger@2.36.0':
+    resolution: {integrity: sha512-NQrZd6bJNw2CL7DlwU7ta6ktxGIbvyga8znuHRlIAAqRjkpC8pYtfXkYDUEQZGqhTeVS6+tU3YxszHuOB/1nkg==}
     peerDependencies:
-      '@middy/core': 4.x || 5.x
+      '@aws-lambda-powertools/jmespath': 2.36.0
+      '@middy/core': 4.x || 5.x || 6.x || 7.x
+    peerDependenciesMeta:
+      '@aws-lambda-powertools/jmespath':
+        optional: true
+      '@middy/core':
+        optional: true
+
+  '@aws-lambda-powertools/metrics@2.36.0':
+    resolution: {integrity: sha512-Y2+c406USCVjJPmJ6zOiZjbqdJUp683yPWVqbQoNCNVSBq5WzhpUpJ9puUY6tokwY1wC79K4xitpU/85yMqJqw==}
+    peerDependencies:
+      '@middy/core': 4.x || 5.x || 6.x || 7.x
     peerDependenciesMeta:
       '@middy/core':
         optional: true
 
-  '@aws-lambda-powertools/metrics@2.9.0':
-    resolution: {integrity: sha512-ramKERstI8MP0ICzxkwDe/tov/wlrqJemJGOAkGwTZjRUO2w1D1XPL721NFERfFc0SQAIGuZA28KC66n9u0BNg==}
+  '@aws-lambda-powertools/tracer@2.36.0':
+    resolution: {integrity: sha512-HWloHxjdAOYjAK6WmI8WiwNw+ke6vtJXTBnMRp8oCrcfne5Z+gmjNp24ls0NLKwnR+e8B160t9Nnjn98DAVK+g==}
     peerDependencies:
-      '@middy/core': 4.x || 5.x
-    peerDependenciesMeta:
-      '@middy/core':
-        optional: true
-
-  '@aws-lambda-powertools/tracer@2.9.0':
-    resolution: {integrity: sha512-if+gyyp2xR/hKTO8LYtPkNnxghQ9+Qc9Bo0uv8WdZ/U92wTq+ufmk0JTktOkhUJ+E5veGvpZXdbHkcaCvmr9jA==}
-    peerDependencies:
-      '@middy/core': 4.x || 5.x
+      '@middy/core': 4.x || 5.x || 6.x || 7.x
     peerDependenciesMeta:
       '@middy/core':
         optional: true
@@ -795,11 +798,11 @@ packages:
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
 
-  '@langchain/aws@1.5.1':
-    resolution: {integrity: sha512-2h+EbDG9TouPIxDDFMwF40FUj9G8fp2OJ6cGEQ22jNe7c4csKeRp6xnBWxksIO4HV0xY4jahTEGLsqkztOEErA==}
+  '@langchain/aws@1.5.2':
+    resolution: {integrity: sha512-dYaypr+dcwLlbJfPh76JByQBbDDro/OxUWVCGfbuMUPc0N20ngFcDeveqBx+hwgbA1r8fpuSxoR7bZugQJ5COw==}
     engines: {node: '>=20'}
     peerDependencies:
-      '@langchain/core': ^1.3.1
+      '@langchain/core': ^1.3.3
 
   '@langchain/classic@1.0.57':
     resolution: {integrity: sha512-Tk6NxEElqqXzusL/TLQBkcdzSgw/gtDCO/l8MUsLZ8BWJ9k429k/kKQzsCzSoZwtUmFYXgfew9sqQwizjcKotw==}
@@ -2055,8 +2058,8 @@ packages:
     engines: {node: '>= 10.0.0'}
     deprecated: The AWS SDK for JavaScript (v2) has reached end-of-support, and no longer receives updates. Please migrate your code to use AWS SDK for JavaScript (v3). More info https://a.co/cUPnyil
 
-  aws-xray-sdk-core@3.10.1:
-    resolution: {integrity: sha512-Eb1Iy5WEjRqRi8G+gi32QjR7t/9xTDore8EKasXsPMXCLMlYunslxJAvT2PDLXQ7ohEC/mKT9+7tUyUt6CGruw==}
+  aws-xray-sdk-core@3.12.0:
+    resolution: {integrity: sha512-lwalRdxXRy+Sn49/vN7W507qqmBRk5Fy2o0a9U6XTjL9IV+oR5PUiiptoBrOcaYCiVuGld8OEbNqhm6wvV3m6A==}
     engines: {node: '>= 14.x'}
 
   aws4@1.12.0:
@@ -2160,15 +2163,9 @@ packages:
     resolution: {integrity: sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==}
     engines: {node: '>=6'}
 
-  camel-case@4.1.2:
-    resolution: {integrity: sha512-gxGWBrTT1JuMx6R+o5PTXMmUnhnVzLQ9SNutD4YqKtI6ap897t3tKECYla6gCWEkplXnlNybEkZg9GEGxKFCgw==}
-
   camelcase@6.3.0:
     resolution: {integrity: sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==}
     engines: {node: '>=10'}
-
-  capital-case@1.0.4:
-    resolution: {integrity: sha512-ds37W8CytHgwnhGGTi88pcPyR15qoNkOpYwmMMfnWqqWgESapLqvDx6huFjQ5vqWSn2Z06173XNA7LtMOeUh1A==}
 
   cdk-assets@2.155.6:
     resolution: {integrity: sha512-xAWNft0r8oGVOIWBR2tcTICTwq11rZzkRXNjsILx0iEjRT4Qo0ue0FmONSyr7O++B0RBmxQYM1xkiyTN0xkFMQ==}
@@ -2188,8 +2185,8 @@ packages:
     resolution: {integrity: sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==}
     engines: {node: '>=10'}
 
-  change-case@4.1.2:
-    resolution: {integrity: sha512-bSxY2ws9OtviILG1EiY5K7NNxkqg/JnRnFxLtKQ96JaviiIxi7djMrSd0ECT9AC+lttClmYwKw53BWpOMblo7A==}
+  change-case@5.4.4:
+    resolution: {integrity: sha512-HRQyTk2/YPEkt9TnUPbOpr64Uw3KOicFWPVBb+xiHvd6eBx/qPr9xqfBFDT8P2vWsvvz4jbEkfDe71W3VyNu2w==}
 
   chownr@3.0.0:
     resolution: {integrity: sha512-+IxzY9BZOQd/XuYPRmrvEVjF/nqj5kgT4kEq7VofrDoM1MxoRjEWkrCC3EtLi59TVawxTAn+orJwFQcrqEN1+g==}
@@ -2261,9 +2258,6 @@ packages:
 
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
-
-  constant-case@3.0.4:
-    resolution: {integrity: sha512-I2hSBi7Vvs7BEuJDr5dDHfzb/Ruj3FyvFyh7KLilAjNQw3Be+xgqUBA2W6scVEcL0hL1dwPRtIqEPVUCKkSsyQ==}
 
   constructs@10.8.1:
     resolution: {integrity: sha512-98yGXYyhePqPYh3cYu8nzBERmAhC0DONe3UD03okK0nehZ7hYP4wgZuf02a04+uOWxnTJ5Rpp5m0GRNpwyLGGA==}
@@ -2395,9 +2389,6 @@ packages:
   doctrine@2.1.0:
     resolution: {integrity: sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw==}
     engines: {node: '>=0.10.0'}
-
-  dot-case@3.0.4:
-    resolution: {integrity: sha512-Kv5nKlh6yRrdrGvxeJ2e5y2eRUpkUosIW4A2AS38zwSz27zu7ufDwQPi5Jhs3XAlGNetl3bmnGhQsMtkKJnj3w==}
 
   dotenv-expand@12.0.3:
     resolution: {integrity: sha512-uc47g4b+4k/M/SeaW1y4OApx+mtLWl92l5LMPP0GNXctZqELk+YGgOPIIC5elYmUH4OuoK3JLhuRUYegeySiFA==}
@@ -2939,9 +2930,6 @@ packages:
     resolution: {integrity: sha512-T2UbfbBEF32wiepXIsMlTW9+dDYC6wMh/t/vYA4tuOMKqWz/n3vr1NFSxQiyP+zk2mXsoMA/i/7qV6LKut1t1A==}
     engines: {node: '>= 0.4'}
 
-  header-case@2.0.4:
-    resolution: {integrity: sha512-H/vuk5TEEVZwrR0lp2zed9OCo1uAILMlx0JEMgC26rzyJJ3N1v6XkwHHXJQdR2doSjcGPM6OKPYoJgf0plJ11Q==}
-
   homedir-polyfill@1.0.3:
     resolution: {integrity: sha512-eSmmWE5bZTK2Nou4g0AI3zZ9rswp7GRKoKXS1BLUkvPviOqs4YTN1djQIqrXy9k5gEtdLPy86JjRwsNM9tnDcA==}
     engines: {node: '>=0.10.0'}
@@ -3394,9 +3382,6 @@ packages:
     resolution: {integrity: sha512-1ulHeNPp6k/LD8H91o7VYFBng5i1BDE7HoKxVbZiGFidS1Rj65qcywLxX+pVfAPoQJEjRdvKcusKwOupHCVOVQ==}
     engines: {node: '>= 12.0.0'}
 
-  lower-case@2.0.2:
-    resolution: {integrity: sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==}
-
   lru-cache@10.2.2:
     resolution: {integrity: sha512-9hp3Vp2/hFQUiIwKo8XCeFVnrg8Pk3TYNPIR7tJADKi5YfcF7vEaK7avFHTlSy3kOKYaJQaalfEo6YuXdceBOQ==}
     engines: {node: 14 || >=16.14}
@@ -3566,9 +3551,6 @@ packages:
 
   nise@5.1.9:
     resolution: {integrity: sha512-qOnoujW4SV6e40dYxJOb3uvuoPHtmLzIk4TFo+j0jPJoC+5Z9xja5qH5JZobEPsa8+YYphMrOSwnrshEhG2qww==}
-
-  no-case@3.0.4:
-    resolution: {integrity: sha512-fgAN3jGAh+RoxUGZHTSOLJIqUc2wmoBwGR4tbpNAKmmovFoWq0OdRkb0VkldReO2a2iBT/OEulG9XSUc10r3zg==}
 
   node-domexception@1.0.0:
     resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==}
@@ -3781,9 +3763,6 @@ packages:
     engines: {node: ^16.14.0 || >=18.0.0}
     hasBin: true
 
-  param-case@3.0.4:
-    resolution: {integrity: sha512-RXlj7zCYokReqWpOPH9oYivUzLYZ5vAPIfEmCTNViosC78F8F0H9y7T7gG2M39ymgutxF5gcFEsyZQSph9Bp3A==}
-
   parent-module@1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
     engines: {node: '>=6'}
@@ -3795,12 +3774,6 @@ packages:
   parse-passwd@1.0.0:
     resolution: {integrity: sha512-1Y1A//QUXEZK7YKz+rD9WydcE1+EuPr6ZBgKecAB8tmoW6UFv0NREVJe1p+jRxtThkcbbKkfwIbWJe/IeE6m2Q==}
     engines: {node: '>=0.10.0'}
-
-  pascal-case@3.1.2:
-    resolution: {integrity: sha512-uWlGT3YSnK9x3BQJaOdcZwrnV6hPpd8jFH1/ucpiLRPh/2zCVJKS19E4GvYHvaCcACn3foXZ0cLB9Wrx1KGe5g==}
-
-  path-case@3.0.4:
-    resolution: {integrity: sha512-qO4qCFjXqVTrcbPt/hQfhTQ+VhFsqNKOPtytgNKkKxSoEp3XPUQ8ObFuePylOIok5gjn69ry8XiULxCwot3Wfg==}
 
   path-exists@4.0.0:
     resolution: {integrity: sha512-ak9Qy5Q7jYb2Wwcey5Fpvg2KoAc/ZIhLSLOSBmRmygPsGwkVVt0fZa0qrtMz+m6tJTAHfZQ8FnmB4MG4LWy7/w==}
@@ -4100,9 +4073,6 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  sentence-case@3.0.4:
-    resolution: {integrity: sha512-8LS0JInaQMCRoQ7YUytAo/xUu5W2XnQxV2HI/6uM6U7CITS1RqPElr30V6uIqyMKM9lJGRVFy5/4CuzcixNYSg==}
-
   set-function-length@1.2.2:
     resolution: {integrity: sha512-pgRc4hJ4/sNjWCSS9AmnS40x3bNMDTknHgL5UaMBTMyJnU90EgWh1Rz+MC9eFu4BuN/UwZjKQuY/1v3rM7HMfg==}
     engines: {node: '>= 0.4'}
@@ -4159,9 +4129,6 @@ packages:
   smol-toml@1.9.1:
     resolution: {integrity: sha512-j7WyPdf0CJoutMzMoPLF/bVXHtKZIT9Rb4eGeEbWw8X2t5oirjPgpL+OpaENZrILYaXqYwnVH+qgUwVbl+pUJQ==}
     engines: {node: '>= 18'}
-
-  snake-case@3.0.4:
-    resolution: {integrity: sha512-LAOh4z89bGQvl9pFfNF8V146i7o7/CqFPbqzYgP+yYzDIDeS9HaNFtXABamRW+AQzEVODcvE79ljJ+8a9YSdMg==}
 
   snowflake-sdk@3.4.1:
     resolution: {integrity: sha512-L4fvZJQdLO7Et7ul1fncfSQRrfs/32pl+sJiintBhk8xYiBpyUfgklAsKi9KCF8eUW3aItcyn1YP9dx8cMyJ9w==}
@@ -4373,9 +4340,6 @@ packages:
     resolution: {integrity: sha512-NoZ4roiN7LnbKn9QqE1amc9DJfzvZXxF4xDavcOWt1BPkdx+m+0gJuPM+S0vCe7zTJMYUP0R8pO2XMr+Y8oLIg==}
     engines: {node: '>=6'}
 
-  tslib@2.6.2:
-    resolution: {integrity: sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==}
-
   tslib@2.7.0:
     resolution: {integrity: sha512-gLXCKdN1/j47AiHiOkJN69hJmcbGTHI0ImLmbYLHykhgeN0jVGola9yVjFgzCUklsZQMW55o+dW7IXv3RCXDzA==}
 
@@ -4450,12 +4414,6 @@ packages:
   unique-slug@4.0.0:
     resolution: {integrity: sha512-WrcA6AyEfqDX5bWige/4NQfPZMtASNVxdmWR76WESYQVAACSgWcR6e9i0mofqqBxYFtL4oAxPIptY73/0YE1DQ==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
-
-  upper-case-first@2.0.2:
-    resolution: {integrity: sha512-514ppYHBaKwfJRK/pNC6c/OxfGa0obSnAl106u97Ed0I625Nin96KAjttZF6ZL3e1XLtphxnqrOi9iWgm+u+bg==}
-
-  upper-case@2.0.2:
-    resolution: {integrity: sha512-KgdgDGJt2TpuwBUIjgG6lzw2GWFRCW9Qkfkiv0DxqHHLYJHmtmdUIKcZd8rHgFSjopVTlw6ggzCm1b8MFQwikg==}
 
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
@@ -4766,25 +4724,27 @@ snapshots:
       '@smithy/util-utf8': 2.3.0
       tslib: 2.7.0
 
-  '@aws-lambda-powertools/commons@2.9.0': {}
-
-  '@aws-lambda-powertools/logger@2.9.0(@middy/core@4.7.0)':
+  '@aws-lambda-powertools/commons@2.36.0':
     dependencies:
-      '@aws-lambda-powertools/commons': 2.9.0
-      lodash.merge: 4.6.2
+      '@aws/lambda-invoke-store': 0.3.0
+
+  '@aws-lambda-powertools/logger@2.36.0(@middy/core@4.7.0)':
+    dependencies:
+      '@aws-lambda-powertools/commons': 2.36.0
     optionalDependencies:
       '@middy/core': 4.7.0
 
-  '@aws-lambda-powertools/metrics@2.9.0(@middy/core@4.7.0)':
+  '@aws-lambda-powertools/metrics@2.36.0(@middy/core@4.7.0)':
     dependencies:
-      '@aws-lambda-powertools/commons': 2.9.0
+      '@aws-lambda-powertools/commons': 2.36.0
     optionalDependencies:
       '@middy/core': 4.7.0
 
-  '@aws-lambda-powertools/tracer@2.9.0(@middy/core@4.7.0)':
+  '@aws-lambda-powertools/tracer@2.36.0(@middy/core@4.7.0)':
     dependencies:
-      '@aws-lambda-powertools/commons': 2.9.0
-      aws-xray-sdk-core: 3.10.1
+      '@aws-lambda-powertools/commons': 2.36.0
+      '@aws/lambda-invoke-store': 0.3.0
+      aws-xray-sdk-core: 3.12.0
     optionalDependencies:
       '@middy/core': 4.7.0
 
@@ -4805,7 +4765,7 @@ snapshots:
       '@smithy/fetch-http-handler': 5.8.0
       '@smithy/node-http-handler': 4.14.1
       '@smithy/types': 4.19.0
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@aws-sdk/client-bedrock-runtime@3.1161.0':
     dependencies:
@@ -4842,7 +4802,7 @@ snapshots:
       '@smithy/fetch-http-handler': 5.8.0
       '@smithy/node-http-handler': 4.14.1
       '@smithy/types': 4.19.0
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@aws-sdk/client-s3@3.1161.0':
     dependencies:
@@ -5485,7 +5445,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.4.15
 
-  '@langchain/aws@1.5.1(@langchain/core@1.3.5(@opentelemetry/api@1.8.0)(openai@7.47.0(@aws-sdk/credential-provider-node@3.972.92)(@smithy/hash-node@3.0.7)(@smithy/signature-v4@5.7.5)(google-auth-library@10.9.1)(undici@7.30.1)(ws@8.22.1)(zod@4.6.7))(ws@8.22.1))':
+  '@langchain/aws@1.5.2(@langchain/core@1.3.5(@opentelemetry/api@1.8.0)(openai@7.47.0(@aws-sdk/credential-provider-node@3.972.92)(@smithy/hash-node@3.0.7)(@smithy/signature-v4@5.7.5)(google-auth-library@10.9.1)(undici@7.30.1)(ws@8.22.1)(zod@4.6.7))(ws@8.22.1))':
     dependencies:
       '@aws-sdk/client-bedrock-agent-runtime': 3.1161.0
       '@aws-sdk/client-bedrock-runtime': 3.1161.0
@@ -6057,7 +6017,7 @@ snapshots:
 
   '@smithy/types@2.12.0':
     dependencies:
-      tslib: 2.6.2
+      tslib: 2.9.1
 
   '@smithy/types@3.5.0':
     dependencies:
@@ -6168,7 +6128,7 @@ snapshots:
 
   '@types/cls-hooked@4.3.8':
     dependencies:
-      '@types/node': 20.16.11
+      '@types/node': 20.19.43
 
   '@types/debug@4.1.13':
     dependencies:
@@ -6622,14 +6582,14 @@ snapshots:
       uuid: 11.1.1
       xml2js: 0.6.2
 
-  aws-xray-sdk-core@3.10.1:
+  aws-xray-sdk-core@3.12.0:
     dependencies:
-      '@aws-sdk/types': 3.667.0
+      '@aws-sdk/types': 3.975.0
       '@smithy/service-error-classification': 2.1.5
       '@types/cls-hooked': 4.3.8
       atomic-batcher: 1.0.2
       cls-hooked: 4.2.2
-      semver: 7.6.0
+      semver: 7.8.5
 
   aws4@1.12.0: {}
 
@@ -6763,18 +6723,7 @@ snapshots:
 
   callsites@3.1.0: {}
 
-  camel-case@4.1.2:
-    dependencies:
-      pascal-case: 3.1.2
-      tslib: 2.6.2
-
   camelcase@6.3.0: {}
-
-  capital-case@1.0.4:
-    dependencies:
-      no-case: 3.0.4
-      tslib: 2.6.2
-      upper-case-first: 2.0.2
 
   cdk-assets@2.155.6:
     dependencies:
@@ -6798,20 +6747,7 @@ snapshots:
       ansi-styles: 4.3.0
       supports-color: 7.2.0
 
-  change-case@4.1.2:
-    dependencies:
-      camel-case: 4.1.2
-      capital-case: 1.0.4
-      constant-case: 3.0.4
-      dot-case: 3.0.4
-      header-case: 2.0.4
-      no-case: 3.0.4
-      param-case: 3.0.4
-      pascal-case: 3.1.2
-      path-case: 3.0.4
-      sentence-case: 3.0.4
-      snake-case: 3.0.4
-      tslib: 2.6.2
+  change-case@5.4.4: {}
 
   chownr@3.0.0: {}
 
@@ -6886,12 +6822,6 @@ snapshots:
       readable-stream: 3.6.2
 
   concat-map@0.0.1: {}
-
-  constant-case@3.0.4:
-    dependencies:
-      no-case: 3.0.4
-      tslib: 2.6.2
-      upper-case: 2.0.2
 
   constructs@10.8.1: {}
 
@@ -6992,11 +6922,6 @@ snapshots:
   doctrine@2.1.0:
     dependencies:
       esutils: 2.0.3
-
-  dot-case@3.0.4:
-    dependencies:
-      no-case: 3.0.4
-      tslib: 2.6.2
 
   dotenv-expand@12.0.3:
     dependencies:
@@ -7686,11 +7611,6 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  header-case@2.0.4:
-    dependencies:
-      capital-case: 1.0.4
-      tslib: 2.6.2
-
   homedir-polyfill@1.0.3:
     dependencies:
       parse-passwd: 1.0.0
@@ -8114,10 +8034,6 @@ snapshots:
       safe-stable-stringify: 2.4.3
       triple-beam: 1.4.1
 
-  lower-case@2.0.2:
-    dependencies:
-      tslib: 2.7.0
-
   lru-cache@10.2.2: {}
 
   lru-cache@11.5.3: {}
@@ -8295,11 +8211,6 @@ snapshots:
       '@sinonjs/text-encoding': 0.7.2
       just-extend: 6.2.0
       path-to-regexp: 6.3.0
-
-  no-case@3.0.4:
-    dependencies:
-      lower-case: 2.0.2
-      tslib: 2.6.2
 
   node-domexception@1.0.0: {}
 
@@ -8642,11 +8553,6 @@ snapshots:
       - bluebird
       - supports-color
 
-  param-case@3.0.4:
-    dependencies:
-      dot-case: 3.0.4
-      tslib: 2.6.2
-
   parent-module@1.0.1:
     dependencies:
       callsites: 3.1.0
@@ -8658,16 +8564,6 @@ snapshots:
       just-diff-apply: 5.5.0
 
   parse-passwd@1.0.0: {}
-
-  pascal-case@3.1.2:
-    dependencies:
-      no-case: 3.0.4
-      tslib: 2.6.2
-
-  path-case@3.0.4:
-    dependencies:
-      dot-case: 3.0.4
-      tslib: 2.6.2
 
   path-exists@4.0.0: {}
 
@@ -8916,12 +8812,6 @@ snapshots:
 
   semver@7.8.5: {}
 
-  sentence-case@3.0.4:
-    dependencies:
-      no-case: 3.0.4
-      tslib: 2.6.2
-      upper-case-first: 2.0.2
-
   set-function-length@1.2.2:
     dependencies:
       define-data-property: 1.1.4
@@ -8990,11 +8880,6 @@ snapshots:
   smart-buffer@4.2.0: {}
 
   smol-toml@1.9.1: {}
-
-  snake-case@3.0.4:
-    dependencies:
-      dot-case: 3.0.4
-      tslib: 2.6.2
 
   snowflake-sdk@3.4.1(asn1.js@5.4.1):
     dependencies:
@@ -9255,8 +9140,6 @@ snapshots:
       minimist: 1.2.8
       strip-bom: 3.0.0
 
-  tslib@2.6.2: {}
-
   tslib@2.7.0: {}
 
   tslib@2.8.1: {}
@@ -9338,14 +9221,6 @@ snapshots:
   unique-slug@4.0.0:
     dependencies:
       imurmurhash: 0.1.4
-
-  upper-case-first@2.0.2:
-    dependencies:
-      tslib: 2.7.0
-
-  upper-case@2.0.2:
-    dependencies:
-      tslib: 2.7.0
 
   uri-js@4.4.1:
     dependencies:

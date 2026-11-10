@@ -57,6 +57,15 @@ describe("OpenSearchServerlessVectorStore network policy", () => {
     expect(serialized).toContain('\\"AllowFromPublic\\":false');
   });
 
+  it("kebab-cases the collection name into the policy names", () => {
+    // Renaming these replaces the live policies on redeploy, so the change-case output must stay stable.
+    const stack = new Stack(new App(), "Test");
+    new OpenSearchServerlessVectorStore(stack, "Store", { name: "TextToSql", description: "test" });
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties("AWS::OpenSearchServerless::SecurityPolicy", { Name: "text-to-sql-security-policy", Type: "encryption" });
+    template.hasResourceProperties("AWS::OpenSearchServerless::SecurityPolicy", { Name: "text-to-sql-network-policy", Type: "network" });
+  });
+
   it("rejects allowPublicAccess: false without a VPC", () => {
     const stack = new Stack(new App(), "Test");
     new OpenSearchServerlessVectorStore(stack, "Store", { name: "test", description: "test", allowPublicAccess: false });

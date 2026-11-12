@@ -17,7 +17,7 @@
 
 import { CfnAccessPolicy, CfnCollection, CfnSecurityPolicy, CfnVpcEndpoint } from "aws-cdk-lib/aws-opensearchserverless";
 import { Construct, Dependable, IDependable } from "constructs";
-import { paramCase } from "change-case";
+import { kebabCase } from "change-case";
 import { IRole } from "aws-cdk-lib/aws-iam";
 import { IVpc, SecurityGroup, SubnetSelection } from "aws-cdk-lib/aws-ec2";
 
@@ -143,13 +143,13 @@ export class OpenSearchServerlessVectorStore extends Construct implements IDepen
       networkPolicies.push(vpcePolicy);
     }
     const cfnEncryptionPolicy = new CfnSecurityPolicy(this, "SecurityPolicy", {
-      name: `${paramCase(config.name)}-security-policy`,
+      name: `${kebabCase(config.name)}-security-policy`,
       type: "encryption",
       policy: JSON.stringify(encryptionPolicy),
     });
 
     const cfnNetworkPolicy = new CfnSecurityPolicy(this, "NetworkPolicy", {
-      name: `${paramCase(config.name)}-network-policy`,
+      name: `${kebabCase(config.name)}-network-policy`,
       type: "network",
       policy: JSON.stringify(networkPolicies),
     });

@@ -50,7 +50,7 @@
       "diff@5": "5.2.2",
       "esbuild@<0.25.0": "0.25.12",
       "expr-eval": "npm:expr-eval-fork@^3.0.3",
-      "fast-xml-parser@<5.7.0": "5.11.2",
+      "fast-xml-parser@<5.7.0": "5.12.0",
       "flatted": "3.4.2",
       "follow-redirects@1": "1.16.2",
       "form-data@2": "2.5.6",

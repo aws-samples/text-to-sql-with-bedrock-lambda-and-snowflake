@@ -31,6 +31,6 @@ export class Layers extends Construct {
       code: Code.fromAsset(path.join(__dirname, "..", "..", "dist", "lambdas-layer.zip")),
       compatibleArchitectures: [Architecture.ARM_64, Architecture.X86_64],
     });
-    this.powerToolsLayer = LayerVersion.fromLayerVersionArn(this, "Powertools", `arn:aws:lambda:${Aws.REGION}:094274105915:layer:AWSLambdaPowertoolsTypeScriptV2:1`);
+    this.powerToolsLayer = LayerVersion.fromLayerVersionArn(this, "Powertools", `arn:aws:lambda:${Aws.REGION}:094274105915:layer:AWSLambdaPowertoolsTypeScriptV2:51`); // v2.36.0
   }
 }

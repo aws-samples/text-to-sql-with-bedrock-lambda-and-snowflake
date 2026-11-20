@@ -41,7 +41,8 @@ const defaultReleaseBranch = "main";
 const cdkVersion = "2.260.0";
 const cdkCliVersion = "^2.1021.0";
 const constructsVersion = "10.5.0";
-const nodeVersion = "20.11.1";
+// change-case 5 is ESM-only and cdk synth runs through CommonJS ts-node, so Node needs require(esm) (20.19+).
+const nodeVersion = "20.19.0";
 const pnpmVersion = "9.0.5";
 const jsiiReleaseVersion = "1.94.0";
 const namespace = "@text-to-sql-with-athena-and-snowflake";
@@ -132,7 +133,7 @@ const main = async () => {
 		releaseTrigger: ReleaseTrigger.manual({}),
 		majorVersion: 0,
 		deps: [
-			"@langchain/aws@^1.5.1",
+			"@langchain/aws@^1.5.2",
 			"@langchain/community@^1.1.29",
 			"@langchain/core@^1.3.5",
 			"langchain@^1.6.0",
@@ -140,9 +141,10 @@ const main = async () => {
 			"@aws-sdk/client-secrets-manager",
 			"@aws-sdk/client-bedrock-runtime@^3.1161.0",
 			"snowflake-sdk@^3.4.1",
-			"@aws-lambda-powertools/logger",
-			"@aws-lambda-powertools/metrics",
-			"@aws-lambda-powertools/tracer",
+			// Keep in step with the Powertools Lambda layer version in src/constructs/Layers.ts (the runtime uses the layer).
+			"@aws-lambda-powertools/logger@^2.36.0",
+			"@aws-lambda-powertools/metrics@^2.36.0",
+			"@aws-lambda-powertools/tracer@^2.36.0",
 			"@middy/core",
 			"@types/aws-lambda",
 			"@aws-sdk/client-glue",
@@ -150,7 +152,7 @@ const main = async () => {
 			"@opensearch-project/opensearch",
 			"@aws-sdk/credential-provider-node"],
 		devDeps: [
-			"change-case@4.1.2",
+			"change-case@5.4.4",
 			"aws-cdk-lib",
 			"cdk-assets",
 			"cdk-nag",

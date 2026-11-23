@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@npmcli/arborist": "^7.5.4",
-    "@nx/devkit": "^24.0.5",
+    "@nx/devkit": "^24.0.6",
     "@nx/workspace": "^24.0.5",
     "@types/node": "^20",
     "@types/npm-packlist": "^7.0.3",

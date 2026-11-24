@@ -134,7 +134,7 @@ export class Lambdas extends Construct implements IDependable {
       // A question takes about 20 seconds end to end (embedding, vector search, Claude, Snowflake query),
       // and a cold Snowflake warehouse can add more. The function is invoked directly, with no API Gateway in front.
       timeout: Duration.seconds(90),
-      // Pinned: the Powertools layer in Layers.ts (v2.36.0, :51) supports Node 22/24; move both together.
+      // Pinned so a CDK upgrade can't move this function to a runtime the Powertools layer (:51, v2.36.0) hasn't been checked against.
       runtime: Runtime.NODEJS_24_X,
       logGroup: textToSqlFunctionLogGroup,
       layers: [config.layers.powerToolsLayer, config.layers.lambdasLayer],
@@ -183,7 +183,7 @@ export class Lambdas extends Construct implements IDependable {
       memorySize: 256,
       architecture: Architecture.ARM_64,
       timeout: Duration.minutes(15),
-      // Pinned: the Powertools layer in Layers.ts (v2.36.0, :51) supports Node 22/24; move both together.
+      // Pinned so a CDK upgrade can't move this function to a runtime the Powertools layer (:51, v2.36.0) hasn't been checked against.
       runtime: Runtime.NODEJS_24_X,
       logGroup: indexTablesFunctionLogGroup,
       layers: [config.layers.powerToolsLayer, config.layers.lambdasLayer],

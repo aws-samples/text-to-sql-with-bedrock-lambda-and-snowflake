@@ -43,7 +43,7 @@ const cdkCliVersion = "^2.1021.0";
 const constructsVersion = "10.5.0";
 // Node 24 LTS: the Lambdas run on nodejs24.x. (change-case 5 is ESM-only and cdk synth runs through
 // CommonJS ts-node, so Node also needs require(esm), which every 24.x has.)
-const nodeVersion = "24.22.3";
+const nodeVersion = "24.15.0";
 const pnpmVersion = "9.0.5";
 const jsiiReleaseVersion = "1.94.0";
 const namespace = "@text-to-sql-with-athena-and-snowflake";

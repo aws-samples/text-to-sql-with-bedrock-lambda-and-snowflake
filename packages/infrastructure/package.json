@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^2",
-    "@types/node": "^20",
+    "@types/node": "^24",
     "@types/sinon": "^17.0.3",
     "@typescript-eslint/eslint-plugin": "^8",
     "@typescript-eslint/parser": "^8",
@@ -63,7 +63,7 @@
     "snowflake-sdk": "^3.4.1"
   },
   "engines": {
-    "node": ">= 20.19.0"
+    "node": ">= 24.22.3"
   },
   "devEngines": {
     "packageManager": {

@@ -139,7 +139,7 @@ const main = async () => {
 			"langchain@^1.6.0",
 			"@aws-sdk/client-ssm",
 			"@aws-sdk/client-secrets-manager",
-			"@aws-sdk/client-bedrock-runtime@^3.1161.0",
+			"@aws-sdk/client-bedrock-runtime@^3.1176.0",
 			"snowflake-sdk@^3.4.1",
 			// Keep in step with the Powertools Lambda layer version in src/constructs/Layers.ts (the runtime uses the layer).
 			"@aws-lambda-powertools/logger@^2.36.0",
@@ -160,7 +160,7 @@ const main = async () => {
 			"@types/sinon",
 			"vitest@^4.0.0",
 			// Direct pins that keep the patched versions in the lockfile (see projenrc/overrides.ts).
-			"axios@^1.20.0",
+			"axios@^1.21.1",
 			"vite@^6.4.3"
 		],
 

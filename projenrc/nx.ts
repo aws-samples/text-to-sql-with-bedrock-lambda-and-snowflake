@@ -26,9 +26,9 @@ export class Nx extends Component {
 
 		// Add nx library dependencies
 		rootProject.addDevDeps(
-			'nx@^24.0.5',
-			'@nx/devkit@^24.0.5',
-			'@nx/workspace@^24.0.5'
+			'nx@^24.0.6',
+			'@nx/devkit@^24.0.6',
+			'@nx/workspace@^24.0.6'
 		);
 
 		// Add nx.json file

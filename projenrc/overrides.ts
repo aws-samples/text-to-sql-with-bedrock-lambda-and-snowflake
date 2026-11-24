@@ -20,7 +20,7 @@
 export const pnpmOverrides: Record<string, string> = {
 	"@tootallnate/once@2": "2.0.1",
 	"ajv@6": "6.15.0",
-	"axios": "1.20.0",
+	"axios": "1.21.1",
 	"bn.js@4": "4.12.5",
 	"bn.js@5": "5.2.5",
 	"brace-expansion@1": "1.1.21",

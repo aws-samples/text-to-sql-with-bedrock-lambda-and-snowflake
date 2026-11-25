@@ -19,6 +19,7 @@ This architecture uses the following services
 ## Prerequisites
 
 * A Snowflake account
+* [Node.js](https://nodejs.org/) 24.15.0 or later (Node 24 LTS; the Lambda functions run on `nodejs24.x`)
 * [pnpm installed](https://pnpm.io/installation)
 * An AWS account
   * [CDK bootstrapped in the account](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping.html)
